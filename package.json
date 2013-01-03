@@ -1,6 +1,6 @@
 {
     "packages": {
-        "eResults/unity-php-adpi": {
+        "eResults/unity-php-api": {
             "master": { @composer.json }
         }
     }
