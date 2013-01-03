@@ -1,5 +1,6 @@
 {
     "name": "eresults/unity-php-api",
+    "version": "1.0.0",
     "autoload": {
         "classmap": ["Exceptions/", "API.php"]
     }
