@@ -1,7 +1,0 @@
-{
-    "packages": {
-        "eResults/unity-php-api": {
-            "master": { @composer.json }
-        }
-    }
-}
