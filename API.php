@@ -91,7 +91,11 @@ class API
 		}
 	}
 
-	public function setCertificateLocation( $location )
+	/**
+	 * 
+	 * @param string $location
+	 */
+	public function setCertificateLocation( $location = null )
 	{
 		if ( !$location )
 		{
