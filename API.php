@@ -83,7 +83,7 @@ class API
 
 		$this->session = new \Zend_Session_Namespace( 'unity' );
 
-		$this->certificateLocation = APPLICATION_PATH . '/../vendor/Unity/ca-bundle.crt';
+		$this->setCertificateLocation();
 
 		if ( $auto_attach )
 		{
@@ -93,6 +93,10 @@ class API
 
 	public function setCertificateLocation( $location )
 	{
+		if ( !$location )
+		{
+			$location = __DIR__ . '/ca-bundle.crt';
+		}
 		$this->certificateLocation = $location;
 	}
 
