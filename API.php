@@ -224,20 +224,21 @@ class API
 	}
 
 	/**
-	 * Get an user by id
+	 * Get an user
 	 * 
-	 * @param int $id
+	 * @param array $search array( id => 123, email => test@test.nl ) It's required to provide one criteria
 	 * @param boolean $refresh
 	 * @return array
 	 */
-	public function getUser( $id, $refresh = false )
+	public function getUser( $search, $refresh = false )
 	{
-		if ( !isset( $this->users[$id] ) || $refresh )
+		if ( isset( $search['id'] ) && isset( $this->users[ $search['id' ]] ) && !$refresh)
 		{
-			$response = $this->request( 'user', self::METHOD_GET, array( 'id' => $id ) );
-			$this->users[$response['user']['id']] = $response['user'];
+			return $this->users[ $search['id'] ];
 		}
-		return $this->users[$id];
+
+		$response = $this->request( 'user', self::METHOD_GET, $search );
+		return $this->users[$response['user']['id']] = $response['user'];
 	}
 
 	/**
