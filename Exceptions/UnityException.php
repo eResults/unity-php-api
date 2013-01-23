@@ -15,4 +15,21 @@ class UnityException extends \Exception
 		return $this->logPriority;
 	}
 	
+	/**
+	 * Optional extra data
+	 * @var mixed 
+	 */
+	protected $data;
+	
+	public function getData()
+	{
+		return $this->data;
+	}
+
+	public function setData( $data )
+	{
+		$this->data = $data;
+		return $this;
+	}
+
 }
