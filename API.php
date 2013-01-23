@@ -207,7 +207,7 @@ class API
 	/**
 	 * Get an account
 	 * 
-	 * @param array $search array( id => 123, systemName = f4, name = test, application = 7 ) When empty return current account
+	 * @param array $search array( id => 123, systemName = f4, name = test ) When empty return current account
 	 * @return array
 	 */
 	public function getAccount( $search = array(), $refresh = false )
