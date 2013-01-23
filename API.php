@@ -205,22 +205,28 @@ class API
 	}
 
 	/**
+	 * Get an account
 	 * 
-	 * Enter description here ...
+	 * @param array $search array( id => 123, systemName = f4, name = test, application = 7 ) When empty return current account
 	 * @return array
 	 */
-	public function getAccount( $accountSystemName = null, $refresh = false )
+	public function getAccount( $search = array(), $refresh = false )
 	{
-		if ( !$accountSystemName )
+		if ( isset( $search['systemName'] ) 
+				&& isset( $this->accounts[ $search['systemName'] ] ) 
+				&& !$refresh )
 		{
-			$accountSystemName = $this->accountSystemName;
+			return $this->accounts[ $search['systemName'] ];
 		}
-		if ( !isset( $this->accounts[$accountSystemName] ) || $refresh )
+		
+		if ( !$search )
 		{
-			$response = $this->request( 'account', self::METHOD_GET, array( 'id' => $accountSystemName ) );
-			$this->accounts[$accountSystemName] = $response['account'];
+			$search[ 'systemName' ] = $this->accountSystemName;
 		}
-		return $this->accounts[$accountSystemName];
+
+		$response = $this->request( 'account', self::METHOD_GET, $search );
+
+		return $this->accounts[ $response['account']['systemName'] ] = $response['account'];
 	}
 
 	/**
