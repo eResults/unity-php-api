@@ -299,7 +299,7 @@ class API
 	/**
 	 * 
 	 * Create an account
-	 * The following keys are possible: productId, accountName, ( userId || ( userEmail || userFirstName || userLastName || userPassword ) )
+	 * The following keys are possible: productId, accountName, accountDisplayName, ( userId || ( email || firstName || lastName || password ) )
 	 * @param array $data
 	 */
 	public function createAccount( $data )
