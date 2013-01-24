@@ -381,6 +381,7 @@ class API
 			case self::METHOD_DELETE :
 				$curl = curl_init( $url );
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
+				curl_setopt( $curl, CURLOPT_POST, true);
 				break;
 
 			default :
