@@ -407,7 +407,7 @@ class API
 			throw new UnityException( 'Server returned "Fatal error"' );
 		}
 
-		$decodedBody = \Zend_Json::decode( $body );
+		$decodedBody = json_decode( $body, true );
 
 		switch ( $decodedBody['code'] )
 		{
