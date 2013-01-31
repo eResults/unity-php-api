@@ -2,7 +2,7 @@ unity-php-api
 =============
 Use this API to connect your application with eResults ID. You need an API key and an account system name.
 
-== Example ==
+## Example
 ```php
 include vendor/unity-php-api/API.php
 
