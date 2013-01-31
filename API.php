@@ -59,9 +59,9 @@ class API
 	private $accounts;
 
 	/**
-	 * @var Zend_Session_Namespace
+	 *
+	 * @var string
 	 */
-	private $session;
 	private $certificateLocation;
 
 	/**
@@ -80,8 +80,6 @@ class API
 		{
 			$this->serverUrl = $serverUrl;
 		}
-
-		$this->session = new \Zend_Session_Namespace( 'unity' );
 
 		$this->setCertificateLocation();
 
@@ -129,9 +127,9 @@ class API
 			header( 'Location: ' . str_replace( '?' . $url['query'], $query, $this->getUrl() ) );
 			exit();
 		}
-		elseif ( isset( $this->session->sessionAlias ) )
+		elseif ( isset( $_SESSION['unity']['sessionAlias'] ) )
 		{
-			return $this->session->sessionAlias;
+			return $_SESSION['unity']['sessionAlias'];
 		}
 		else
 		{
@@ -353,6 +351,10 @@ class API
 		$vars['unityHash'] = hash( 'sha256', $this->accountSystemName . $this->privateKey );
 		$vars['accountSystemName'] = $this->accountSystemName;
 
+		$curl = curl_init();
+		
+		curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, $method );
+		
 		switch ( $method )
 		{
 			case self::METHOD_GET :
@@ -365,30 +367,28 @@ class API
 				{
 					$id = '';
 				}
-				$curl = curl_init( $url . $id . '?' . http_build_query( $vars ) );
+				
+				$url = $url . $id . '?' . http_build_query( $vars );
 				break;
 
 			case self::METHOD_POST :
-				$curl = curl_init( $url );
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
 				break;
 
 			case self::METHOD_PUT :
-				$curl = curl_init( $url . '/' . $vars['id'] );
+				$url = $url . '/' . $vars['id'];
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
 				break;
 
 			case self::METHOD_DELETE :
-				$curl = curl_init( $url );
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
-				curl_setopt( $curl, CURLOPT_POST, true);
 				break;
 
 			default :
 				throw new \Exception( 'Invalid http method' );
 		}
 
-		curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, $method );
+		curl_setopt( $curl, CURLOPT_URL, $url );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true );
 		curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 2 );
@@ -437,7 +437,7 @@ class API
 	 */
 	public function setSessionAlias( $sessionAlias )
 	{
-		$this->session->sessionAlias = $sessionAlias;
+		$_SESSION['unity']['sessionAlias'] = $sessionAlias;
 	}
 
 	public function getServerUrl()
