@@ -381,7 +381,7 @@ class API
 				break;
 
 			case self::METHOD_DELETE :
-				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
+				$url = $url . '?' . http_build_query( $vars );
 				break;
 
 			default :
