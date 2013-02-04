@@ -13,7 +13,28 @@ session_start();
 
 $api = new API( ACCOUNT_SYSTEM_NAME, API_KEY );
 
-$currentUser = $api->getAuthorizedUser();
+try
+{
+  $currentUser = $api->getAuthorizedUser();
+}
+catch ( \Unity\Exceptions\Forbidden $e )
+{
+  // Current user doesn't have rights for this application, send user to login page
+  $api->login();
+}
+catch ( \Unity\Exceptions\SessionExpired $e )
+{
+  // Users session is expired, send user to login page to login again
+  $api->login();
+}
+catch( \Unity\Exceptions\UnAuthorized $e )
+{
+  echo "Your ACCOUNT_SYSTEM_NAME and API_KEY don't have rights to access the API";
+}
+catch( \Unity\Exceptions\BadRequest $e )
+{
+  echo "Request failed because of the following reason: $e->getMessage()";
+}
 
 if ( ! $currentUser )
 {
