@@ -29,7 +29,8 @@ catch ( \Unity\Exceptions\SessionExpired $e )
 }
 catch( \Unity\Exceptions\UnAuthorized $e )
 {
-  echo "Your ACCOUNT_SYSTEM_NAME and API_KEY don't have rights to access the API";
+  // No access to this account, send user to login page
+  $api->log()t;
 }
 catch( \Unity\Exceptions\BadRequest $e )
 {
