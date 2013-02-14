@@ -5,6 +5,10 @@ Use this API to connect your application with eResults ID. You need an API key a
 ## Example
 ```php
 include vendor/unity-php-api/API.php
+include vendor/unity-php-api/Exceptions/Forbidden.php
+include vendor/unity-php-api/Exceptions/SessionExpired.php
+include vendor/unity-php-api/Exceptions/UnAuthrorized.php
+include vendor/unity-php-api/Exceptions/BadRequest.php
 
 define( 'API_KEY', 'XXXX@!#XXXX' );
 define( 'ACCOUNT_SYSTEM_NAME', 'x123' );
