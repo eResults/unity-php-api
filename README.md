@@ -30,7 +30,7 @@ catch ( \Unity\Exceptions\SessionExpired $e )
 catch( \Unity\Exceptions\UnAuthorized $e )
 {
   // No access to this account, send user to login page
-  $api->log()t;
+  $api->login();
 }
 catch( \Unity\Exceptions\BadRequest $e )
 {
