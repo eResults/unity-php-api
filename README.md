@@ -39,7 +39,7 @@ catch( \Unity\Exceptions\UnAuthorized $e )
 }
 catch( \Unity\Exceptions\BadRequest $e )
 {
-  echo "Request failed because of the following reason: $e->getMessage()";
+  die ( "Request failed because of the following reason: $e->getMessage()" );
 }
 
 if ( ! $currentUser )
