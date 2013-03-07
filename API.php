@@ -266,10 +266,10 @@ class API
 	 * Invite a user. The identifier can be an emailaddress or an user id.
 	 * 
 	 * @param string $identifier
-	 * @param bool $admin
+	 * @param bool $role 'admin' or 'user'
 	 * @return array
 	 */
-	public function inviteUser( $identifier, $admin = false )
+	public function inviteUser( $identifier, $role = 'user' )
 	{
 		if ( strstr( $identifier, '@' ) )
 		{
@@ -280,9 +280,30 @@ class API
 			$data = array( 'userId' => $identifier );
 		}
 		$data['sessionAlias'] = $this->getSessionAlias();
-		$data['admin'] = $admin;
+		$data['role'] = $role;
 
 		$response = $this->request( 'user', self::METHOD_POST, $data );
+		$this->users[$response['user']['id']] = $response['user'];
+		return $response['user'];
+	}
+	
+	/**
+	 * Give an user a role.
+	 * 
+	 * @param string $user
+	 * @param string $role 'admin' or 'user'
+	 * @return array
+	 */
+	public function grantRights( $userId, $role )
+	{
+		$data = array (
+			'id' => $userId,
+			'role'	=> $role,
+			'sessionAlias' => $this->getSessionAlias()
+		);
+		
+		$response = $this->request( 'user', self::METHOD_PUT, $data );
+
 		$this->users[$response['user']['id']] = $response['user'];
 		return $response['user'];
 	}
@@ -360,6 +381,7 @@ class API
 		switch ( $method )
 		{
 			case self::METHOD_GET :
+			case self::METHOD_PUT :
 				if ( isset( $vars['id'] ) )
 				{
 					$id = '/' . $vars['id'];
@@ -374,11 +396,6 @@ class API
 				break;
 
 			case self::METHOD_POST :
-				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
-				break;
-
-			case self::METHOD_PUT :
-				$url = $url . '/' . $vars['id'];
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
 				break;
 
