@@ -263,12 +263,13 @@ class API
 	}
 
 	/**
+	 * Invite a user. The identifier can be an emailaddress or an user id.
 	 * 
-	 * Enter description here ...
 	 * @param string $identifier
+	 * @param bool $admin
 	 * @return array
 	 */
-	public function inviteUser( $identifier )
+	public function inviteUser( $identifier, $admin = false )
 	{
 		if ( strstr( $identifier, '@' ) )
 		{
@@ -279,6 +280,7 @@ class API
 			$data = array( 'userId' => $identifier );
 		}
 		$data['sessionAlias'] = $this->getSessionAlias();
+		$data['admin'] = $admin;
 
 		$response = $this->request( 'user', self::METHOD_POST, $data );
 		$this->users[$response['user']['id']] = $response['user'];
