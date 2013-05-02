@@ -67,7 +67,7 @@ class API
 	/**
 	 * Class constructor
 	 */
-	public function __construct( $applicationKey, $privateKey, $serverUrl = null, $auto_attach = true )
+	public function __construct( $applicationKey, $privateKey, $serverUrl = null )
 	{
 		if ( !$applicationKey || !$privateKey )
 		{
@@ -76,17 +76,12 @@ class API
 		$this->applicationKey = $applicationKey;
 		$this->privateKey = $privateKey;
 
-		if ( $serverUrl !== null )
+		if ( $serverUrl )
 		{
 			$this->serverUrl = $serverUrl;
 		}
 
 		$this->setCertificateLocation();
-
-		if ( $auto_attach )
-		{
-			$this->attach();
-		}
 	}
 
 	/**
@@ -102,11 +97,14 @@ class API
 		$this->certificateLocation = $location;
 	}
 
-	public function attach( $force = false )
+	public function attach( $domain )
 	{
-		if ( $force || !$this->getSessionAlias() )
+		if ( !$this->getSessionAlias() )
 		{
-			header( 'Location: ' . $this->getAttachUrl( array( 'redirect' => $this->getUrl() ) ) );
+			header( 'Location: ' . $this->getAttachUrl( array( 
+				'redirect' => $this->getUrl(), 
+				'domain' => $domain 
+			)));
 			exit();
 		}
 	}
@@ -147,13 +145,17 @@ class API
 	 * 
 	 * @param string $redirect url to redirect back to
 	 */
-	public function login( $redirect = null )
+	public function login( $domain, $redirect = null )
 	{
 		if ( !$redirect )
 		{
 			$redirect = $this->getUrl();
 		}
-		$this->redirect( 'sso', $redirect, $this->applicationKey );
+		$this->redirect( 'sso', array( 
+			'redirect' => $redirect, 
+			'applicationKey' => $this->applicationKey, 
+			'domain' => $domain 
+		));
 	}
 
 	/**
@@ -161,17 +163,16 @@ class API
 	 * @param string Redirect url. If false do no redirect.
 	 * @param string AccountSystemName Default this is the currect account
 	 */
-	public function logout( $redirect = false, $applicationKey = false )
+	public function logout( $domain, $redirect = false )
 	{
 		$this->request( 'session', self::METHOD_DELETE, array( 'id' => $this->getSessionAlias() ) );
 
 		if ( $redirect )
 		{
-			if ( !$applicationKey )
-			{
-				$applicationKey = $this->applicationKey;
-			}
-			$this->redirect( 'sso', $redirect, $applicationKey );
+			$this->redirect( 'sso', array(
+				'redirect'	=> $redirect,
+				'domain'	=> $domain 
+			));
 		}
 	}
 
@@ -181,12 +182,15 @@ class API
 		{
 			$redirect = $this->getUrl();
 		}
-		$this->redirect( 'no-access', $redirect, $this->applicationKey );
+		$this->redirect( 'no-access', array(
+			'redirect'	=> $redirect,
+			'applicationKey' => $this->applicationKey
+		));
 	}
 
-	private function redirect( $page, $redirect, $applicationKey )
+	private function redirect( $page, $params )
 	{
-		header( 'Location: ' . $this->serverUrl . '/' . $page . '?' . http_build_query( array( 'redirect' => $redirect, 'applicationKey' => $applicationKey ) ) );
+		header( 'Location: ' . $this->serverUrl . '/' . $page . '?' . http_build_query( $params ) );
 		exit();
 	}
 
@@ -197,9 +201,9 @@ class API
 	 */
 	public function getAttachUrl( $params = array( ) )
 	{
-		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array(
-							'applicationKey' => $this->applicationKey
-								), $params ) );
+		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array( 
+			'applicationKey' => $this->applicationKey
+		), $params ) );
 	}
 
 	/**
@@ -372,7 +376,7 @@ class API
 		$url = $this->serverUrl . '/api-v1/' . $type;
 
 		$vars['unityHash'] = hash( 'sha256', $this->applicationKey . $this->privateKey );
-		$vars['accountSystemName'] = $this->applicationKey;
+		$vars['applicationKey'] = $this->applicationKey;
 
 		$curl = curl_init();
 		
@@ -415,7 +419,7 @@ class API
 		curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, 50 );
 
 		$body = curl_exec( $curl );
-
+		
 		if ( curl_errno( $curl ) != 0 )
 		{
 			throw new UnityException( 'SSO failure: HTTP request to server failed. ' . curl_error( $curl ) );
