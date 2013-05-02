@@ -32,7 +32,7 @@ class API
 	 * My identifier, given by Unity.
 	 * @var string
 	 */
-	private $accountSystemName;
+	private $applicationKey;
 
 	/**
 	 * My private key, given by Unity.
@@ -67,13 +67,13 @@ class API
 	/**
 	 * Class constructor
 	 */
-	public function __construct( $accountSystemName, $privateKey, $serverUrl = null, $auto_attach = true )
+	public function __construct( $applicationKey, $privateKey, $serverUrl = null, $auto_attach = true )
 	{
-		if ( !$accountSystemName || !$privateKey )
+		if ( !$applicationKey || !$privateKey )
 		{
-			throw new UnityException( 'Missing accountSystemName or privateKey' );
+			throw new UnityException( 'Missing applicationKey or privateKey' );
 		}
-		$this->accountSystemName = $accountSystemName;
+		$this->applicationKey = $applicationKey;
 		$this->privateKey = $privateKey;
 
 		if ( $serverUrl !== null )
@@ -153,7 +153,7 @@ class API
 		{
 			$redirect = $this->getUrl();
 		}
-		$this->redirect( 'sso', $redirect, $this->accountSystemName );
+		$this->redirect( 'sso', $redirect, $this->applicationKey );
 	}
 
 	/**
@@ -161,17 +161,17 @@ class API
 	 * @param string Redirect url. If false do no redirect.
 	 * @param string AccountSystemName Default this is the currect account
 	 */
-	public function logout( $redirect = false, $accountSystemName = false )
+	public function logout( $redirect = false, $applicationKey = false )
 	{
 		$this->request( 'session', self::METHOD_DELETE, array( 'id' => $this->getSessionAlias() ) );
 
 		if ( $redirect )
 		{
-			if ( !$accountSystemName )
+			if ( !$applicationKey )
 			{
-				$accountSystemName = $this->accountSystemName;
+				$applicationKey = $this->applicationKey;
 			}
-			$this->redirect( 'sso', $redirect, $accountSystemName );
+			$this->redirect( 'sso', $redirect, $applicationKey );
 		}
 	}
 
@@ -181,12 +181,12 @@ class API
 		{
 			$redirect = $this->getUrl();
 		}
-		$this->redirect( 'no-access', $redirect, $this->accountSystemName );
+		$this->redirect( 'no-access', $redirect, $this->applicationKey );
 	}
 
-	private function redirect( $page, $redirect, $accountSystemName )
+	private function redirect( $page, $redirect, $applicationKey )
 	{
-		header( 'Location: ' . $this->serverUrl . '/' . $page . '?' . http_build_query( array( 'redirect' => $redirect, 'accountSystemName' => $accountSystemName ) ) );
+		header( 'Location: ' . $this->serverUrl . '/' . $page . '?' . http_build_query( array( 'redirect' => $redirect, 'applicationKey' => $applicationKey ) ) );
 		exit();
 	}
 
@@ -198,7 +198,7 @@ class API
 	public function getAttachUrl( $params = array( ) )
 	{
 		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array(
-							'accountSystemName' => $this->accountSystemName
+							'applicationKey' => $this->applicationKey
 								), $params ) );
 	}
 
@@ -219,7 +219,7 @@ class API
 		
 		if ( !$search )
 		{
-			$search[ 'systemName' ] = $this->accountSystemName;
+			$search[ 'systemName' ] = $this->applicationKey;
 		}
 
 		$response = $this->request( 'account', self::METHOD_GET, $search );
@@ -345,7 +345,7 @@ class API
 	 */
 	public function modifyAccount( $data = array( ) )
 	{
-		$data['id'] = $this->accountSystemName;
+		$data['id'] = $this->applicationKey;
 
 		$response = $this->request( 'account', self::METHOD_PUT, $data );
 
@@ -371,8 +371,8 @@ class API
 	{
 		$url = $this->serverUrl . '/api-v1/' . $type;
 
-		$vars['unityHash'] = hash( 'sha256', $this->accountSystemName . $this->privateKey );
-		$vars['accountSystemName'] = $this->accountSystemName;
+		$vars['unityHash'] = hash( 'sha256', $this->applicationKey . $this->privateKey );
+		$vars['accountSystemName'] = $this->applicationKey;
 
 		$curl = curl_init();
 		
