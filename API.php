@@ -63,11 +63,17 @@ class API
 	 * @var string
 	 */
 	private $certificateLocation;
+	
+	/**
+	 *
+	 * @var string 
+	 */
+	private $domain;
 
 	/**
 	 * Class constructor
 	 */
-	public function __construct( $applicationKey, $privateKey, $serverUrl = null )
+	public function __construct( $applicationKey, $privateKey, $domain, $serverUrl = null )
 	{
 		if ( !$applicationKey || !$privateKey )
 		{
@@ -75,6 +81,8 @@ class API
 		}
 		$this->applicationKey = $applicationKey;
 		$this->privateKey = $privateKey;
+		
+		$this->setDomain( $domain );
 
 		if ( $serverUrl )
 		{
@@ -97,13 +105,13 @@ class API
 		$this->certificateLocation = $location;
 	}
 
-	public function attach( $domain )
+	public function attach()
 	{
 		if ( !$this->getSessionAlias() )
 		{
 			header( 'Location: ' . $this->getAttachUrl( array( 
 				'redirect' => $this->getUrl(), 
-				'domain' => $domain 
+				'domain' => $this->domain 
 			)));
 			exit();
 		}
@@ -145,7 +153,7 @@ class API
 	 * 
 	 * @param string $redirect url to redirect back to
 	 */
-	public function login( $domain, $redirect = null )
+	public function login( $redirect = null )
 	{
 		if ( !$redirect )
 		{
@@ -154,7 +162,7 @@ class API
 		$this->redirect( 'sso', array( 
 			'redirect' => $redirect, 
 			'applicationKey' => $this->applicationKey, 
-			'domain' => $domain 
+			'domain' => $this->domain 
 		));
 	}
 
@@ -163,7 +171,7 @@ class API
 	 * @param string Redirect url. If false do no redirect.
 	 * @param string AccountSystemName Default this is the currect account
 	 */
-	public function logout( $domain, $redirect = false )
+	public function logout( $redirect = false )
 	{
 		$this->request( 'session', self::METHOD_DELETE, array( 'id' => $this->getSessionAlias() ) );
 
@@ -171,7 +179,7 @@ class API
 		{
 			$this->redirect( 'sso', array(
 				'redirect'	=> $redirect,
-				'domain'	=> $domain 
+				'domain'	=> $this->domain 
 			));
 		}
 	}
@@ -204,6 +212,12 @@ class API
 		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array( 
 			'applicationKey' => $this->applicationKey
 		), $params ) );
+	}
+	
+	public function setDomain( $domain )
+	{
+		$this->domain = $domain;
+		return $this;
 	}
 
 	/**
@@ -376,7 +390,7 @@ class API
 		$url = $this->serverUrl . '/api-v1/' . $type;
 
 		$vars['unityHash'] = hash( 'sha256', $this->applicationKey . $this->privateKey );
-		$vars['applicationKey'] = $this->applicationKey;
+		$vars['domain'] = $this->domain;
 
 		$curl = curl_init();
 		
