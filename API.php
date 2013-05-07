@@ -223,7 +223,7 @@ class API
 	/**
 	 * Get an account
 	 * 
-	 * @param array $search array( id => 123, systemName = f4, name = test ) When empty return current account
+	 * @param array $search array( id => 123, systemName = f4, name = test, domain = f4.usesmaia.com ) When empty return current account
 	 * @return array
 	 */
 	public function getAccount( $search = array(), $refresh = false )
@@ -237,7 +237,7 @@ class API
 		
 		if ( !$search )
 		{
-			$search[ 'systemName' ] = $this->applicationKey;
+			$search[ 'domain' ] = $this->domain;
 		}
 
 		$response = $this->request( 'account', self::METHOD_GET, $search );
