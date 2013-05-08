@@ -111,7 +111,7 @@ class API
 		{
 			header( 'Location: ' . $this->getAttachUrl( array( 
 				'redirect' => $this->getUrl(), 
-				'domain' => $this->domain 
+				'_domain' => $this->domain 
 			)));
 			exit();
 		}
@@ -162,7 +162,7 @@ class API
 		$this->redirect( 'sso', array( 
 			'redirect' => $redirect, 
 			'applicationKey' => $this->applicationKey, 
-			'domain' => $this->domain 
+			'_domain' => $this->domain 
 		));
 	}
 
@@ -179,7 +179,7 @@ class API
 		{
 			$this->redirect( 'sso', array(
 				'redirect'	=> $redirect,
-				'domain'	=> $this->domain 
+				'_domain'	=> $this->domain 
 			));
 		}
 	}
@@ -390,7 +390,7 @@ class API
 		$url = $this->serverUrl . '/api-v1/' . $type;
 
 		$vars['unityHash'] = hash( 'sha256', $this->applicationKey . $this->privateKey );
-		$vars['domain'] = $this->domain;
+		$vars['_domain'] = $this->domain;
 
 		$curl = curl_init();
 		
