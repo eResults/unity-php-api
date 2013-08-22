@@ -265,7 +265,8 @@ class API
 	
 	public function getUsers()
 	{
-		return $this->request( 'user' );
+		$response = $this->request( 'user' );
+		return $response['users'];
 	}
 
 	/**
