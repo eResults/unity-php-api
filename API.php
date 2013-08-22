@@ -63,7 +63,7 @@ class API
 	 * @var string
 	 */
 	private $certificateLocation;
-	
+
 	/**
 	 *
 	 * @var string 
@@ -81,7 +81,7 @@ class API
 		}
 		$this->applicationKey = $applicationKey;
 		$this->privateKey = $privateKey;
-		
+
 		$this->setDomain( $domain );
 
 		if ( $serverUrl )
@@ -209,11 +209,11 @@ class API
 	 */
 	public function getAttachUrl( $params = array( ) )
 	{
-		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array( 
+		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array(
 			'applicationKey' => $this->applicationKey
 		), $params ) );
 	}
-	
+
 	public function setDomain( $domain )
 	{
 		$this->domain = $domain;
@@ -262,6 +262,11 @@ class API
 		$response = $this->request( 'user', self::METHOD_GET, $search );
 		return $this->users[$response['user']['id']] = $response['user'];
 	}
+	
+	public function getUsers()
+	{
+		return $this->request( 'user' );
+	}
 
 	/**
 	 * Get the current user
@@ -287,7 +292,7 @@ class API
 	 * @param bool $role 'admin' or 'user'
 	 * @return array
 	 */
-	public function inviteUser( $identifier, $role = 'user' )
+	public function inviteUser( $identifier, $role = 'user', $metadata = null )
 	{
 		if ( strstr( $identifier, '@' ) )
 		{
@@ -299,12 +304,13 @@ class API
 		}
 		$data['sessionAlias'] = $this->getSessionAlias();
 		$data['role'] = $role;
+		$data['metadata'] = $metadata;
 
 		$response = $this->request( 'user', self::METHOD_POST, $data );
 		$this->users[$response['user']['id']] = $response['user'];
 		return $response['user'];
 	}
-	
+
 	/**
 	 * Give an user a role.
 	 * 
@@ -433,7 +439,7 @@ class API
 		curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, 50 );
 
 		$body = curl_exec( $curl );
-		
+
 		if ( curl_errno( $curl ) != 0 )
 		{
 			throw new UnityException( 'SSO failure: HTTP request to server failed. ' . curl_error( $curl ) );
