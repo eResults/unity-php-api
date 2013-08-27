@@ -334,7 +334,8 @@ class API
 			'userId' => $userId,
 			'sessionAlias' => $this->getSessionAlias()
 		);
-		$this->request( 'user', self::METHOD_DELETE, $data );
+		$response = $this->request( 'user', self::METHOD_DELETE, $data );
+		return $response['message'];
 	}
 
 	/**
