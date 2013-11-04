@@ -76,18 +76,15 @@ class API
 	public function __construct( $applicationKey, $privateKey, $domain, $serverUrl = null )
 	{
 		if ( !$applicationKey || !$privateKey )
-		{
 			throw new UnityException( 'Missing applicationKey or privateKey' );
-		}
+
 		$this->applicationKey = $applicationKey;
 		$this->privateKey = $privateKey;
 
 		$this->setDomain( $domain );
 
 		if ( $serverUrl )
-		{
 			$this->serverUrl = $serverUrl;
-		}
 
 		$this->setCertificateLocation();
 	}
@@ -99,9 +96,8 @@ class API
 	public function setCertificateLocation( $location = null )
 	{
 		if ( !$location )
-		{
 			$location = __DIR__ . '/ca-bundle.crt';
-		}
+
 		$this->certificateLocation = $location;
 	}
 
@@ -134,13 +130,9 @@ class API
 			exit();
 		}
 		elseif ( isset( $_SESSION['unity']['sessionAlias'] ) )
-		{
 			return $_SESSION['unity']['sessionAlias'];
-		}
 		else
-		{
 			return false;
-		}
 	}
 
 	private function getUrl()
@@ -156,9 +148,8 @@ class API
 	public function login( $redirect = null )
 	{
 		if ( !$redirect )
-		{
 			$redirect = $this->getUrl();
-		}
+
 		$this->redirect( 'sso', array( 
 			'redirect' => $redirect, 
 			'applicationKey' => $this->applicationKey, 
@@ -187,9 +178,8 @@ class API
 	public function noAccess( $redirect = null )
 	{
 		if ( !$redirect )
-		{
 			$redirect = $this->getUrl();
-		}
+
 		$this->redirect( 'no-access', array(
 			'redirect'	=> $redirect,
 			'applicationKey' => $this->applicationKey
@@ -236,9 +226,7 @@ class API
 		}
 		
 		if ( !$search )
-		{
 			$search[ 'domain' ] = $this->domain;
-		}
 
 		$response = $this->request( 'account', self::METHOD_GET, $search );
 
@@ -255,9 +243,7 @@ class API
 	public function getUser( $search, $refresh = false )
 	{
 		if ( isset( $search['id'] ) && isset( $this->users[ $search['id' ]] ) && !$refresh)
-		{
 			return $this->users[ $search['id'] ];
-		}
 
 		$response = $this->request( 'user', self::METHOD_GET, $search );
 		return $this->users[$response['user']['id']] = $response['user'];
@@ -311,16 +297,19 @@ class API
 	 * 
 	 * @param string $user
 	 * @param string $role 'admin' or 'user'
+	 * @param array|bool Default: false
 	 * @return array
 	 */
-	public function grantRights( $userId, $role = 'user', $metadata = array() )
+	public function grantRights( $userId, $role = 'user', $metadata = false )
 	{
 		$data = array (
 			'id' => $userId,
 			'role'	=> $role,
-			'sessionAlias' => $this->getSessionAlias(),
-			$data['metadata'] = json_encode( $metadata )
+			'sessionAlias' => $this->getSessionAlias()
 		);
+		
+		if ( $metadata !== false )
+			$data['metadata'] = json_encode( $metadata );
 		
 		$response = $this->request( 'user', self::METHOD_PUT, $data );
 
@@ -399,6 +388,9 @@ class API
 		
 		curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, $method );
 		
+		foreach( $vars as &$var )
+			$var = urlencode ( $var );
+		
 		switch ( $method )
 		{
 			case self::METHOD_GET :
@@ -409,9 +401,7 @@ class API
 					unset( $vars['id'] );
 				}
 				else
-				{
 					$id = '';
-				}
 				
 				$url = $url . $id . '?' . http_build_query( $vars );
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
@@ -439,14 +429,10 @@ class API
 		$body = curl_exec( $curl );
 
 		if ( curl_errno( $curl ) != 0 )
-		{
 			throw new UnityException( 'SSO failure: HTTP request to server failed. ' . curl_error( $curl ) );
-		}
 
 		if ( stristr( $body, 'Fatal error' ) )
-		{
 			throw new UnityException( 'Server returned "Fatal error"' );
-		}
 
 		$decodedBody = json_decode( $body, true );
 
