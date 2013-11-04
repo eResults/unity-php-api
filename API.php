@@ -244,6 +244,12 @@ class API
 		$response = $this->request( 'user', self::METHOD_GET, $search );
 		return $this->users[$response['user']['id']] = $response['user'];
 	}
+	
+	public function getUsers()
+	{
+		$response = $this->request( 'user' );
+		return $response['users'];
+	}
 
 	/**
 	 * Get the current user
@@ -269,18 +275,13 @@ class API
 	 * @param bool $role 'admin' or 'user'
 	 * @return array
 	 */
-	public function inviteUser( $identifier, $role = 'user' )
+	public function inviteUser( $identifier, $role = 'user', $metadata = array() )
 	{
-		if ( strstr( $identifier, '@' ) )
-		{
-			$data = array( 'email' => $identifier );
-		}
-		else
-		{
-			$data = array( 'userId' => $identifier );
-		}
+		$data = array( strstr( $identifier, '@' ) ? 'email' : 'userId' => $identifier );
+		
 		$data['sessionAlias'] = $this->getSessionAlias();
 		$data['role'] = $role;
+		$data['metadata'] = json_encode( $metadata );
 
 		$response = $this->request( 'user', self::METHOD_POST, $data );
 		$this->users[$response['user']['id']] = $response['user'];
@@ -294,12 +295,13 @@ class API
 	 * @param string $role 'admin' or 'user'
 	 * @return array
 	 */
-	public function grantRights( $userId, $role )
+	public function grantRights( $userId, $role = 'user', $metadata = array() )
 	{
 		$data = array (
 			'id' => $userId,
 			'role'	=> $role,
-			'sessionAlias' => $this->getSessionAlias()
+			'sessionAlias' => $this->getSessionAlias(),
+			'metadata' => json_encode( $metadata )
 		);
 		
 		$response = $this->request( 'user', self::METHOD_PUT, $data );
@@ -314,7 +316,8 @@ class API
 			'userId' => $userId,
 			'sessionAlias' => $this->getSessionAlias()
 		);
-		$this->request( 'user', self::METHOD_DELETE, $data );
+		$response = $this->request( 'user', self::METHOD_DELETE, $data );
+		return $response['message'];
 	}
 
 	/**
@@ -378,6 +381,9 @@ class API
 		
 		curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, $method );
 		
+		foreach( $vars as &$var )
+			$var = urlencode ( $var );
+		
 		switch ( $method )
 		{
 			case self::METHOD_GET :
@@ -393,6 +399,7 @@ class API
 				}
 				
 				$url = $url . $id . '?' . http_build_query( $vars );
+				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
 				break;
 
 			case self::METHOD_POST :
