@@ -8,5 +8,5 @@ class SessionExpired extends UnityException
 	
 	protected $code = 420;
 	
-	protected $logPriority = 5; //\Zend_Log::NOTICE
+	protected $logPriority = 5;
 }
