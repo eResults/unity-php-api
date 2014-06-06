@@ -19,6 +19,6 @@
 	},
 	
     "autoload": {
-        "psr-0": { "eResults\\Unity\\Api": "lib/" }
+        "psr-4": { "eResults\\Unity\\Api\\": "lib/" }
     }
 }
