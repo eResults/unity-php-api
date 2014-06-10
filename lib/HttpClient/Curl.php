@@ -22,20 +22,20 @@ class Curl
 	 *
 	 * @return string   HTTP response
 	 */
-	public function doRequest($url, array $parameters = [], $httpMethod = 'GET', array $options = [])
+	public function doRequest($url, array $parameters = array(), $httpMethod = 'GET', array $options = array())
 	{
-		$curlOptions = [];
+		$curlOptions = array();
 
-		$options['headers'] = array_merge( [
+		$options['headers'] = array_merge( array(
 			'Authorization' => 'Bearer ' . $options['token']
-		], $options['headers'] ?: array() );
+		), $options['headers'] ?: array() );
 
 		if( $httpMethod === 'POST' )
 		{
-			$curlOptions += [
+			$curlOptions += array(
 				CURLOPT_POST => true,
 				CURLOPT_POSTFIELDS => array()
-			];
+			);
 		}
 		
 		if ( !empty($parameters) )
@@ -50,17 +50,17 @@ class Curl
 				default:
 					$curlOptions[ CURLOPT_POSTFIELDS ] = $body = json_encode( $parameters );
 					
-					$options['headers'] = array_merge( $options['headers'], [
+					$options['headers'] = array_merge( $options['headers'], array(
 						'Content-Type' => 'application/json',
 						'Content-Length' => strlen( $body )
-					] );
+					) );
 			}
 		}
 
 		foreach( $options['headers'] as $key => &$value )
 			$value = $key . ': ' . $value;
 		
-		$curlOptions += [
+		$curlOptions += array(
 			CURLOPT_URL => $url,
 			CURLOPT_PORT => $options['httpPort'],
 			CURLOPT_USERAGENT => $options['userAgent'],
@@ -69,10 +69,10 @@ class Curl
 			CURLOPT_SSL_VERIFYPEER => true,
 			CURLOPT_TIMEOUT => $options['timeout'],
 			CURLOPT_HTTPHEADER => $options['headers']
-		];
+		);
 
 		$response = $this->doCurlCall( $curlOptions );
-		$responseBody = $this->decodeResponse( $response['response'], [] );
+		$responseBody = $this->decodeResponse( $response['response'], array() );
 		
 		if ( !in_array( $response['headers']['http_code'], array( 0, 200, 201 ) ) )
 			throw new Exception(

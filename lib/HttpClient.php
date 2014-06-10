@@ -13,21 +13,21 @@ abstract class HttpClient
      * The http client options
      * @var array
      */
-    protected $options = [
+    protected $options = array(
         'protocol'	=> 'https',
         'url'		=> ':protocol://id.eresults.nl/api/:path',
         'userAgent'	=> 'php-eresults-api (http://eresults.nl/api)',
         'httpPort'  => 443,
         'timeout'	=> 10,
         'token'		=> null
-    ];
+    );
 
     /**
      * Instanciate a new http client
      *
      * @param  array   $options  http client options
      */
-    public function __construct( array $options = [] )
+    public function __construct( array $options = array() )
     {
         $this->options = array_merge( $this->options, $options );
     }
@@ -42,7 +42,7 @@ abstract class HttpClient
      *
      * @return string   HTTP response
      */
-    abstract protected function doRequest( $url, array $parameters = [], $httpMethod = 'GET', array $options = [] );
+    abstract protected function doRequest( $url, array $parameters = array(), $httpMethod = 'GET', array $options = array() );
 
     /**
      * Send a GET request
@@ -54,7 +54,7 @@ abstract class HttpClient
      *
      * @return array                    Data
      */
-    public function get( $path, array $parameters = [], array $options = [] )
+    public function get( $path, array $parameters = array(), array $options = array() )
     {
         return $this->request( $path, $parameters, 'GET', $options );
     }
@@ -69,7 +69,7 @@ abstract class HttpClient
      *
      * @return array                    Data
      */
-    public function post( $path, array $parameters = [], array $options = [] )
+    public function post( $path, array $parameters = array(), array $options = array() )
     {
         return $this->request( $path, $parameters, 'POST', $options );
     }
@@ -85,16 +85,16 @@ abstract class HttpClient
      *
      * @return array                    Data
      */
-    public function request( $path, array $parameters = [], $httpMethod = 'GET', array $options = [] )
+    public function request( $path, array $parameters = array(), $httpMethod = 'GET', array $options = array() )
     {
         $options = array_merge( $this->options, $options );
 
         // create full url
-        $url = strtr( $options['url'], [
+        $url = strtr( $options['url'], array(
             ':protocol' => $options['protocol'],
             ':format'   => $options['format'],
             ':path'     => trim($path, '/')
-        ] );
+        ) );
 
         // get encoded response
         return $this->doRequest( $url, $parameters, $httpMethod, $options );

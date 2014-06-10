@@ -27,7 +27,7 @@ abstract class Api
      * @param   array   $requestOptions		reconfigure the request
      * @return  array
      */
-    protected function get( $path, array $parameters = [], array $requestOptions = [] )
+    protected function get( $path, array $parameters = array(), array $requestOptions = array() )
     {
         return $this->client->get( $path, $parameters, $requestOptions );
     }
@@ -40,7 +40,7 @@ abstract class Api
      * @param   array   $requestOptions		reconfigure the request
      * @return  array
      */
-    protected function post( $path, array $parameters = [], array $requestOptions = [] )
+    protected function post( $path, array $parameters = array(), array $requestOptions = array() )
     {
         return $this->client->post( $path, $parameters, $requestOptions );
     }

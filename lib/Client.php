@@ -4,11 +4,11 @@ namespace eResults\Unity\Api;
 
 class Client
 {
-	protected $options = [
+	protected $options = array(
 		'token' => null,
 		'client_id' => null,
 		'client_secret' => null
-	];
+	);
 
 	protected $httpClient = null;
 	
@@ -19,7 +19,7 @@ class Client
 	 */
 	protected $apis = array();
 
-	public function __construct ( $options = [], HttpClient $client = null )
+	public function __construct ( $options = array(), HttpClient $client = null )
 	{
 		$this->options = array_merge( $this->options, $options );
 		$this->httpClient = $client ?: new HttpClient\Curl( $this->options );
@@ -52,9 +52,9 @@ class Client
 	
 	public function logout ( $returnTo = null )
 	{
-		$response = $this->post('me/logout', [
+		$response = $this->post('me/logout', array(
 			'return_to' => $returnTo
-		] );
+		) );
 		
 		header("Location: {$response['logout_url']}");
 		die();
