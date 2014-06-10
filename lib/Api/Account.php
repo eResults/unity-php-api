@@ -17,7 +17,7 @@ class Account
      * @param   string  $id         the username to show
      * @return  array                     informations about the user
      */
-    public function get ( $id )
+    public function getAccount ( $id )
     {
         return $this->get('accounts/' . urlencode( $id ));
     }

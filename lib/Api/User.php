@@ -16,7 +16,7 @@ class User extends Api
      * @param   string  $id         the username to show
      * @return  array                     informations about the user
      */
-    public function get ( $id )
+    public function getUser ( $id )
     {
         return $this->get('users/' . urlencode( $id ));
     }
