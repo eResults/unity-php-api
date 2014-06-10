@@ -75,10 +75,25 @@ abstract class HttpClient
     }
 
     /**
+     * Send a DELETE request
+     *
+     * @param  string   $path			Request path
+     * @param  array    $parameters		DELETE Parameters
+     * @param  string   $httpMethod		HTTP method to use
+     * @param  array    $options		reconfigure the request for this call only
+     *
+     * @return array                    Data
+     */
+    public function delete( $path, array $parameters = array(), array $options = array() )
+    {
+        return $this->request( $path, $parameters, 'DELETE', $options );
+    }
+
+    /**
      * Send a request to the server, receive a response,
      * decode the response and returns an associative array
      *
-     * @param  string   $path            Request Api path
+     * @param  string   $path           Request Api path
      * @param  array    $parameters     Parameters
      * @param  string   $httpMethod     HTTP method to use
      * @param  array    $options        Request options

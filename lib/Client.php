@@ -74,6 +74,19 @@ class Client
 	}
 	
 	/**
+	 * Get the account API
+	 *
+	 * @return  Api\User
+	 */
+	public function getAccountApi()
+	{
+		if ( !isset( $this->apis['account'] ) )
+			$this->apis['account'] = new Api\Account( $this );
+
+		return $this->apis['account'];
+	}
+	
+	/**
 	 * Inject an API instance
 	 *
 	 * @param   string	$name		The API name
@@ -125,5 +138,19 @@ class Client
 	public function post( $path, array $parameters = array(), $requestOptions = array() )
 	{
 		return $this->getHttpClient()->post( $path, $parameters, $requestOptions );
+	}
+
+	/**
+	 * Call any path, DELETE method
+	 * Ex: $api->delete('user/[user-id]')
+	 *
+	 * @param   string  $path				the Api path
+	 * @param   array   $parameters			DELETE parameters
+	 * @param   array   $requestOptions		reconfigure the request
+	 * @return  array
+	 */
+	public function delete( $path, array $parameters = array(), $requestOptions = array() )
+	{
+		return $this->getHttpClient()->delete( $path, $parameters, $requestOptions );
 	}
 }

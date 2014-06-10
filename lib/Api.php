@@ -44,4 +44,17 @@ abstract class Api
     {
         return $this->client->post( $path, $parameters, $requestOptions );
     }
+
+    /**
+     * Call any path, DELETE method
+     *
+     * @param   string  $path				the path
+     * @param   array   $parameters			DELETE parameters
+     * @param   array   $requestOptions		reconfigure the request
+     * @return  array
+     */
+    protected function delete( $path, array $parameters = array(), array $requestOptions = array() )
+    {
+        return $this->client->delete( $path, $parameters, $requestOptions );
+    }
 }
