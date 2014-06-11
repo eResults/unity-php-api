@@ -14,8 +14,8 @@
 	  }
 	],
 	
-	"suggest": {
-		"ohmy/auth": "Handles OAuth authentication with ease."
+	"require": {
+		"league/oauth2-client": "~0.3"
 	},
 	
     "autoload": {
