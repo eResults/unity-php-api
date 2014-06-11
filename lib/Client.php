@@ -252,7 +252,7 @@ class Client
 		$body = $response->json();
 		
 		if( !preg_match( '~[23][0-9]{2}~', $response->getStatusCode() ) )
-			throw new Exception\HttpException( $response->getStatusCode(), $body['error'] );
+			throw new Exception\HttpException( $response->getStatusCode(), $body );
 			
 		if( isset( $body['pages'], $body['_embedded'] ) && ctype_digit( $body['pages'] ) )
 			return new Collection\PaginatedCollection( $body );
