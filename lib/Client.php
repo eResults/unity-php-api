@@ -51,15 +51,28 @@ class Client
 		) );
 	}
 
-	public function authenticate ( $token )
+	/**
+	 * Get the League auth provider for easy authentication.
+	 * 
+	 * @param array $options A set of options for the Provider
+	 * @return Provider\UnityProvider
+	 */
+	public function getAuthProvider ( $options = array() )
 	{
-		var_dump( $this->httpClient->getConfig()->get('headers') );
-//		$this->getHttpClient()
-//			->setOption( 'token', $token );
-//			->setOption( 'client_id', $clientId )
-//			->setOption( 'client_secret', $clientSecret );
+		$options = array_merge( $options, array(
+			'clientId' => $this->options['client_id'],
+			'clientSecret' => $this->options['client_secret']
+		) );
+		
+		return new Provider\UnityProvider( $options );
 	}
-
+	
+	/**
+	 * Get the value of an option.
+	 * 
+	 * @param string $option
+	 * @return mixed
+	 */
 	public function getOption ( $option )
 	{
 		return isset( $this->options[ $option ] )
@@ -67,16 +80,46 @@ class Client
 			: null;
 	}
 	
+	/**
+	 * Set an option.
+	 * 
+	 * @param string $key
+	 * @param mixed $value
+	 * @return Client
+	 */
+	public function setOption ( $key, $value )
+	{
+		$this->options[ $key ] = $value;
+		return $this;
+	}
+	
+	/**
+	 * Get the Guzzle HttpClient
+	 * 
+	 * @return HttpClient
+	 */
 	public function getHttpClient ()
 	{
 		return $this->httpClient;
 	}
 	
+	/**
+	 * A shorthand to get the currently authenticated user.
+	 * 
+	 * @return array
+	 * @throws HttpException
+	 */
 	public function getAuthenticatedUser ()
 	{
 		return $this->get('me');
 	}
 	
+	/**
+	 * Shorthand to logout the currently authenticated user.
+	 * 
+	 * @param string $returnTo The URL to which the user will be returned after logging out, or when the user decides to cancel.
+	 * @throws HttpException
+	 */
 	public function logout ( $returnTo = null )
 	{
 		$response = $this->post('me/logout', array(
@@ -90,7 +133,7 @@ class Client
 	/**
 	 * Get the user API
 	 *
-	 * @return  Api\User
+	 * @return Api\User
 	 */
 	public function getUserApi()
 	{
@@ -103,7 +146,7 @@ class Client
 	/**
 	 * Get the account API
 	 *
-	 * @return  Api\User
+	 * @return Api\User
 	 */
 	public function getAccountApi()
 	{
@@ -181,7 +224,13 @@ class Client
 		return $this->handleRequest( $this->getHttpClient()->delete( $path, $parameters, $requestOptions ) );
 	}
 	
-	public function handleRequest ( Request $request )
+	/**
+	 * Add authentication data to the request and sends it. Calls handleResponse when done.
+	 * 
+	 * @param \Guzzle\Http\Message\Request $request
+	 * @return mixed
+	 */
+	protected function handleRequest ( Request $request )
 	{
 		$request->addHeader( 'Authorization', 'Bearer ' . $this->options['token'] );
 		
@@ -197,7 +246,14 @@ class Client
 		return $this->handleResponse( $response );
 	}
 	
-	public function handleResponse ( Response $response )
+	/**
+	 * Handle the Guzzle request response. Returns either an array or a PaginatedCollection.
+	 * 
+	 * @param \Guzzle\Http\Message\Response $response
+	 * @return array|PaginatedCollection
+	 * @throws Exception\HttpException
+	 */
+	protected function handleResponse ( Response $response )
 	{
 		$body = $response->json();
 		
@@ -205,7 +261,7 @@ class Client
 			throw new Exception\HttpException( $response->getStatusCode(), $body['error'] );
 			
 		if( isset( $body['pages'] ) && ctype_digit( $body['pages'] ) )
-			return new PaginatedCollection( $body );
+			return new Collection\PaginatedCollection( $body );
 		
 		return $body;
 	}
