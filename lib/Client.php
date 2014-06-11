@@ -2,7 +2,9 @@
 
 namespace eResults\Unity\Api;
 
-use Guzzle\Http\Client as HttpClient;
+use Guzzle\Http\Client as HttpClient,
+	Guzzle\Http\Message\Request,
+	Guzzle\Http\Message\Response;
 
 class Client
 {
@@ -150,7 +152,7 @@ class Client
 	 */
 	public function get( $path, array $parameters = array(), $requestOptions = array() )
 	{
-		return $this->getHttpClient()->get( $path, $parameters, $requestOptions );
+		return $this->handleRequest( $this->getHttpClient()->get( $path, $parameters, $requestOptions ) );
 	}
 
 	/**
@@ -164,7 +166,7 @@ class Client
 	 */
 	public function post( $path, array $parameters = array(), $requestOptions = array() )
 	{
-		return $this->getHttpClient()->post( $path, $parameters, $requestOptions );
+		return $this->handleRequest( $this->getHttpClient()->post( $path, $parameters, $requestOptions ) );
 	}
 
 	/**
@@ -178,6 +180,24 @@ class Client
 	 */
 	public function delete( $path, array $parameters = array(), $requestOptions = array() )
 	{
-		return $this->getHttpClient()->delete( $path, $parameters, $requestOptions );
+		return $this->handleRequest( $this->getHttpClient()->delete( $path, $parameters, $requestOptions ) );
+	}
+	
+	public function handleRequest ( Request $request )
+	{
+		return $this->handleResponse( $request->send() );
+	}
+	
+	public function handleResonse ( Response $response )
+	{
+		$body = $response->getBody();
+		
+		if( !preg_match( '~[23][0-9]{2}~', $response->getStatusCode() ) )
+			throw new Exception\HttpException( $response->getStatusCode(), $body['error'] );
+			
+		if( isset( $body['pages'] ) && ctype_digit( $body['pages'] ) )
+			return new PaginatedCollection( $body );
+		
+		return $body;
 	}
 }
