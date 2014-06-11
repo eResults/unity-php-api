@@ -16,8 +16,6 @@ class Client
 		'protocol'	=> 'https',
 		'url'		=> ':protocol://id.eresults.nl/api/',
 		'userAgent'	=> 'php-eresults-api (http://eresults.nl/api)',
-		'httpPort'  => 443,
-		'timeout'	=> 10,
 		'token'		=> null,
 		'format'	=> 'json'
 	);
@@ -44,11 +42,7 @@ class Client
 			':format'   => $this->options['format']
 		) );
 
-		$this->httpClient = $client ?: new HttpClient( $url, array(
-			'headers' => array(
-				'Authorization' => 'Bearer ' . $this->options['token']
-			)
-		) );
+		$this->httpClient = $client ?: new HttpClient( $url );
 	}
 
 	/**
@@ -260,7 +254,7 @@ class Client
 		if( !preg_match( '~[23][0-9]{2}~', $response->getStatusCode() ) )
 			throw new Exception\HttpException( $response->getStatusCode(), $body['error'] );
 			
-		if( isset( $body['pages'] ) && ctype_digit( $body['pages'] ) )
+		if( isset( $body['pages'], $body['_embedded'] ) && ctype_digit( $body['pages'] ) )
 			return new Collection\PaginatedCollection( $body );
 		
 		return $body;
