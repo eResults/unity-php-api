@@ -10,6 +10,8 @@ namespace eResults\Unity\Api\Exception;
 class HttpException
 	extends \Exception
 {
-
-	//put your code here
+	public function __construct ( $code, $message = '' )
+	{
+		parent::__construct( $message, $code );
+	}
 }
