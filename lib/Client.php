@@ -43,12 +43,10 @@ class Client
 			':protocol' => $this->options['protocol'],
 			':format'   => $this->options['format']
 		) );
-		
+
 		$this->httpClient = $client ?: new HttpClient( $url, array(
-			'defaults' => array(
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $this->options['access_token']
-				)
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $this->options['token']
 			)
 		) );
 	}
@@ -185,12 +183,23 @@ class Client
 	
 	public function handleRequest ( Request $request )
 	{
-		return $this->handleResponse( $request->send() );
+		$request->addHeader( 'Authorization', 'Bearer ' . $this->options['token'] );
+		
+		try
+		{
+			$response = $request->send();
+		}
+		catch ( \Guzzle\Http\Exception\ClientErrorResponseException $ex )
+		{
+			$this->handleResponse( $ex->getResponse() );
+		}
+		
+		return $this->handleResponse( $response );
 	}
 	
 	public function handleResponse ( Response $response )
 	{
-		$body = $response->getBody();
+		$body = $response->json();
 		
 		if( !preg_match( '~[23][0-9]{2}~', $response->getStatusCode() ) )
 			throw new Exception\HttpException( $response->getStatusCode(), $body['error'] );
