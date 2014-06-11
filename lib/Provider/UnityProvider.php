@@ -13,7 +13,7 @@ use League\OAuth2\Client\Provider\IdentityProvider,
 class UnityProvider
 	extends IdentityProvider
 {
-	protected $baseUrl = 'https://api.eresults.nl';
+	protected $baseUri = 'https://api.eresults.nl';
 	
 	public function urlAccessToken()
 	{

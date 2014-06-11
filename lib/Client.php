@@ -14,7 +14,8 @@ class Client
 		'client_secret' => null,
 		
 		'protocol'	=> 'https',
-		'url'		=> ':protocol://id.eresults.nl/api/',
+		'path'		=> 'api',
+		'url'		=> ':protocol://id.eresults.nl/:path',
 		'userAgent'	=> 'php-eresults-api (http://eresults.nl/api)',
 		'token'		=> null,
 		'format'	=> 'json'
@@ -39,7 +40,8 @@ class Client
 		
 		$url = strtr( $this->options['url'], array(
 			':protocol' => $this->options['protocol'],
-			':format'   => $this->options['format']
+			':format'   => $this->options['format'],
+			':path'		=> $this->options['path']
 		) );
 
 		$this->httpClient = $client ?: new HttpClient( $url );
@@ -55,9 +57,14 @@ class Client
 	{
 		$options = array_merge( $options, array(
 			'clientId' => $this->options['client_id'],
-			'clientSecret' => $this->options['client_secret']
+			'clientSecret' => $this->options['client_secret'],
+			'baseUri' => strtr( $this->options['url'], array(
+				':protocol' => $this->options['protocol'],
+				':format'   => $this->options['format'],
+				':path'		=> ''
+			) )
 		) );
-		
+
 		return new Provider\UnityProvider( $options );
 	}
 	
