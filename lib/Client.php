@@ -2,14 +2,28 @@
 
 namespace eResults\Unity\Api;
 
+use Guzzle\Http\Client as HttpClient;
+
 class Client
 {
 	protected $options = array(
 		'token' => null,
 		'client_id' => null,
-		'client_secret' => null
+		'client_secret' => null,
+		
+		'protocol'	=> 'https',
+		'url'		=> ':protocol://id.eresults.nl/api/',
+		'userAgent'	=> 'php-eresults-api (http://eresults.nl/api)',
+		'httpPort'  => 443,
+		'timeout'	=> 10,
+		'token'		=> null,
+		'format'	=> 'json'
 	);
 
+	/**
+	 *
+	 * @var HttpClient
+	 */
 	protected $httpClient = null;
 	
 	/**
@@ -22,13 +36,26 @@ class Client
 	public function __construct ( $options = array(), HttpClient $client = null )
 	{
 		$this->options = array_merge( $this->options, $options );
-		$this->httpClient = $client ?: new HttpClient\Curl( $this->options );
+		
+		$url = strtr( $this->options['url'], array(
+			':protocol' => $this->options['protocol'],
+			':format'   => $this->options['format']
+		) );
+		
+		$this->httpClient = $client ?: new HttpClient( $url, array(
+			'defaults' => array(
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $this->options['access_token']
+				)
+			)
+		) );
 	}
 
 	public function authenticate ( $token )
 	{
-		$this->getHttpClient()
-			->setOption( 'token', $token );
+		var_dump( $this->httpClient->getConfig()->get('headers') );
+//		$this->getHttpClient()
+//			->setOption( 'token', $token );
 //			->setOption( 'client_id', $clientId )
 //			->setOption( 'client_secret', $clientSecret );
 	}
