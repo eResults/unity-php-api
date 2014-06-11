@@ -25,10 +25,14 @@ class Curl
 	public function doRequest($url, array $parameters = array(), $httpMethod = 'GET', array $options = array())
 	{
 		$curlOptions = array();
+		
+		$options = array_merge_recursive( array(
+			'headers' => array()
+		), $options );
 
 		$options['headers'] = array_merge( array(
 			'Authorization' => 'Bearer ' . $options['token']
-		), $options['headers'] ?: array() );
+		), $options['headers'] );
 
 		if( $httpMethod === 'POST' )
 		{
