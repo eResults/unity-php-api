@@ -188,7 +188,7 @@ class Client
 		return $this->handleResponse( $request->send() );
 	}
 	
-	public function handleResonse ( Response $response )
+	public function handleResponse ( Response $response )
 	{
 		$body = $response->getBody();
 		
