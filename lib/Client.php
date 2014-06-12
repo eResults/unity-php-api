@@ -208,7 +208,15 @@ class Client
 	 */
 	public function post( $path, array $parameters = array(), $requestOptions = array() )
 	{
-		return $this->handleRequest( $this->getHttpClient()->post( $path, $parameters, $requestOptions ) );
+		$request = $this->getHttpClient()->post(
+			$path,
+			null,
+			$requestOptions
+		);
+		
+		$request->setBody( json_encode( $parameters ), 'application/json' );
+		
+		return $this->handleRequest( $request );
 	}
 
 	/**
