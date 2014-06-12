@@ -12,7 +12,7 @@ class Account
 	extends Api
 {
     /**
-     * Get extended information about a user by its username
+     * Get extended information about an account
      *
      * @param   string  $id         the username to show
      * @return  array                     informations about the user
@@ -23,12 +23,8 @@ class Account
     }
 
     /**
-     * Update user informations.
+     * Update account information.
      *
-     * @param   string  $id         the username to update
-     * @param   array   $data             key=>value user attributes to update.
-     *                                    key can be name, email, blog, company or location
-     * @return  array                     informations about the user
      */
     public function update( $id, array $data )
     {
@@ -42,37 +38,35 @@ class Account
      */
     public function getUsers( $id )
     {
-        return $this->get('users/' . urlencode( $id ) . '/users');
+        return $this->get('accounts/' . urlencode( $id ) . '/users');
     }
 	
 	/**
      * Invite a user to an account with certain rights.
      *
-     * @param   string  $id         the username
-     * @return  array                     list of followed users
+	 * @param	string	$accountId	The id of the account
+     * @param	string	$id			The users email address or UUID
+	 * @param	array	$metadata	The metadata you want to attach to the user right
+     * @return	array
+	 * @throws HttpException
      */
-	public function inviteUser ( $accountId, $email, $role = 'user', $metadata = array() )
+	public function inviteUser ( $accountId, $id, $metadata = array() )
 	{
-		return $this->post( 'users/' . urlencode( $accountId ) . '/users', array(
-			'user' => array(
-				'email' => $email
-			),
-			
-			'right' => array(
-				'metadata' => $metadata,
-				'role' => $role
-			)
+		return $this->post( 'accounts/' . urlencode( $accountId ) . '/users', array(
+			'id' => $id,
+			'metadata' => $metadata
 		) );
 	}
 	
 	/**
      * Invite a user to an account with certain rights.
      *
-     * @param   string  $id         the username
-     * @return  array                     list of followed users
+     * @param string	$accountId	The id of the account
+	 * @param string	$id			The users email address or UUID 
+	 * @throws HttpException
      */
 	public function removeUser ( $accountId, $id )
 	{
-		return $this->delete( 'users/' . urlencode( $accountId ) . '/users/' . urlencode( $id ) );
+		$this->delete( 'users/' . urlencode( $accountId ) . '/users/' . urlencode( $id ) );
 	}
 }
