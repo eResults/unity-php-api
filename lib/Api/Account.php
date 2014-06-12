@@ -62,11 +62,11 @@ class Account
      * Invite a user to an account with certain rights.
      *
      * @param string	$accountId	The id of the account
-	 * @param string	$id			The users email address or UUID 
+	 * @param string	$id			The users UUID 
 	 * @throws HttpException
      */
 	public function removeUser ( $accountId, $id )
 	{
-		$this->delete( 'users/' . urlencode( $accountId ) . '/users/' . urlencode( $id ) );
+		$this->delete( 'accounts/' . urlencode( $accountId ) . '/users/' . urlencode( $id ) );
 	}
 }
