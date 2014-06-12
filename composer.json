@@ -15,6 +15,7 @@
 	],
 	
 	"require": {
+		"guzzle/guzzle": "~3.9",
 		"league/oauth2-client": "~0.3"
 	},
 	
