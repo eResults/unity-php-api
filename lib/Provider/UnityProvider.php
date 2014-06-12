@@ -13,21 +13,21 @@ use League\OAuth2\Client\Provider\IdentityProvider,
 class UnityProvider
 	extends IdentityProvider
 {
-	protected $baseUri = 'https://api.eresults.nl';
+	protected $baseUri = 'https://api.eresults.nl/';
 	
 	public function urlAccessToken()
 	{
-		return $this->baseUrl . '/oauth/v2/token';
+		return $this->baseUri . 'oauth/v2/token';
 	}
 
 	public function urlAuthorize()
 	{
-		return $this->baseUrl . '/oauth/v2/auth';
+		return $this->baseUri . 'oauth/v2/auth';
 	}
 
 	public function urlUserDetails( AccessToken $token )
 	{
-		return $this->baseUrl . '/api/me?access_token=' . $token;
+		return $this->baseUri . 'api/me?access_token=' . $token;
 	}
 
 	public function userDetails( $response, AccessToken $token )
