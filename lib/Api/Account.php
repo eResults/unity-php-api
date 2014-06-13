@@ -30,6 +30,26 @@ class Account
     {
     }
 
+	/**
+	 * Claim an account for an app.
+	 * 
+	 * @param string $app			The app UUID or public ID
+	 * @param string $accountName	/[a-z0-9]([a-z0-9\-]+[a-z0-9]|[a-z0-9]?)/ formatted account name.
+	 * @param string $email			The user claiming the account, will become the owner.
+	 * @param string $planId		The plan UUID or public ID
+	 * @param string $planType		The plan type, either trial or null.
+	 * @return array				The claimed account.
+	 */
+	public function claim ( $app, $accountName, $email, $planId, $planType = 'trial' )
+	{
+		return $this->post( 'apps/' . urlencode( $app ) . '/actions/claim', array(
+			'account_name' => $accountName,
+			'plan_id' => $planId,
+			'plan_type' => $planType,
+			'user_email' => $email
+		) );
+	}
+	
     /**
      * Get the accounts a user has access to
      *
