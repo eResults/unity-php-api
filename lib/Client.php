@@ -147,7 +147,7 @@ class Client
 	/**
 	 * Get the account API
 	 *
-	 * @return Api\User
+	 * @return Api\Account
 	 */
 	public function getAccountApi()
 	{
@@ -256,7 +256,7 @@ class Client
 	}
 	
 	/**
-	 * Handle the Guzzle request response. Returns either an array or a PaginatedCollection.
+	 * Handle the response. Returns either an array or a PaginatedCollection.
 	 * 
 	 * @param \Guzzle\Http\Message\Response $response
 	 * @return array|PaginatedCollection
