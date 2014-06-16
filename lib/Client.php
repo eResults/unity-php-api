@@ -56,6 +56,7 @@ class Client
 	public function getAuthProvider ( $options = array() )
 	{
 		$options = array_merge( $options, array(
+			'redirectUri' => $options['redirect_uri'],
 			'clientId' => $this->options['client_id'],
 			'clientSecret' => $this->options['client_secret'],
 			'baseUri' => strtr( $this->options['url'], array(
