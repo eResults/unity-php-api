@@ -113,7 +113,7 @@ class Client
 	 */
 	public function getAuthenticatedUser ()
 	{
-		return $this->get('me');
+		return $this->get( 'me', [], [ 'type' => 'user' ] );
 	}
 	
 	/**
@@ -195,7 +195,7 @@ class Client
 	 */
 	public function get( $path, array $parameters = array(), $requestOptions = array() )
 	{
-		return $this->handleRequest( $this->getHttpClient()->get( $path, $parameters, $requestOptions ) );
+		return $this->handleRequest( $this->getHttpClient()->get( $path, $parameters, $requestOptions ), $requestOptions );
 	}
 
 	/**
@@ -240,7 +240,7 @@ class Client
 	 * @param \Guzzle\Http\Message\Request $request
 	 * @return mixed
 	 */
-	protected function handleRequest ( Request $request )
+	protected function handleRequest ( Request $request, array $requestOptions = [] )
 	{
 		$request->addHeader( 'Authorization', 'Bearer ' . $this->options['token'] );
 		
@@ -253,7 +253,7 @@ class Client
 			$this->handleResponse( $ex->getResponse() );
 		}
 		
-		return $this->handleResponse( $response );
+		return $this->handleResponse( $response, $requestOptions );
 	}
 	
 	/**
@@ -263,7 +263,7 @@ class Client
 	 * @return array|PaginatedCollection
 	 * @throws Exception\HttpException
 	 */
-	protected function handleResponse ( Response $response )
+	protected function handleResponse ( Response $response, array $requestOptions = [] )
 	{
 		$body = $response->json();
 		
@@ -273,6 +273,9 @@ class Client
 		if( isset( $body['pages'], $body['_embedded'] ) && ctype_digit( $body['pages'] ) )
 			return new Collection\PaginatedCollection( $body );
 		
-		return $body;
+		if( isset( $requestOptions['type'] ) )
+			return Response\ObjectResponse::factory( $this, $requestOptions['type'], $body );
+		
+		return new Response\ObjectResponse( $this, $body );
 	}
 }
