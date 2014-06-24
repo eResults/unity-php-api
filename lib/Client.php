@@ -4,7 +4,8 @@ namespace eResults\Unity\Api;
 
 use Guzzle\Http\Client as HttpClient,
 	Guzzle\Http\Message\Request,
-	Guzzle\Http\Message\Response;
+	Guzzle\Http\Message\Response,
+	eResults\Unity\Api\Response\ObjectResponse;
 
 class Client
 {
@@ -274,8 +275,8 @@ class Client
 			return new Collection\PaginatedCollection( $body );
 		
 		if( isset( $requestOptions['type'] ) )
-			return Response\ObjectResponse::factory( $this, $requestOptions['type'], $body );
+			return ObjectResponse::factory( $this, $requestOptions['type'], $body );
 		
-		return new Response\ObjectResponse( $this, $body );
+		return new ObjectResponse( $this, $body );
 	}
 }
