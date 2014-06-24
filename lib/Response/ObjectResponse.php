@@ -82,11 +82,11 @@ class ObjectResponse
 		if( !isset( $this->data['_links'][ $name ] ) )
 			return null;
 		
-		$link = $this->data['_links'][ $name ];
+		$link = $this->data['_links'][ $name ]['href'];
 
 		return preg_match( '|^https?\:|', $link )
 			? $link
-			: strtr( $this->client->getOption('url'), [ ':path' => $link ] );
+			: strtr( $this->client->getOption('url'), [ ':path' => ltrim( $link, '/' ) ] );
 	}
 	
 	public function offsetExists($offset)
