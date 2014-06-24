@@ -29,7 +29,7 @@ class UserRightResponse
 		$this->metadata = $this->rightData['metadata'];
 	}
 	
-	public function getMetadata ( $key = null )
+	public function getMetadata ( $key = null, $default = null )
 	{
 		if( !isset( $this->metadata ) )
 			return null;
@@ -38,6 +38,6 @@ class UserRightResponse
 			? $this->metadata
 			: ( isset( $this->metadata[ $key ] )
 				? $this->metadata[ $key ]
-				: null );
+				: $default );
 	}
 }

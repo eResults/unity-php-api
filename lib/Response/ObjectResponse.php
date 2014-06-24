@@ -36,6 +36,8 @@ class ObjectResponse
 				
 		if( isset( $this->data['_embedded'] ) )
 			$this->parseEmbedded( $this->data['_embedded'] );
+		
+		$this->build();
 	}
 	
 	public function build () {}
@@ -62,17 +64,17 @@ class ObjectResponse
 			$this->embedded[ $name ] = [];
 			
 			foreach( $values as $key => $value )
-				$this->embedded[ $name ][ $key ] = ResponseObject::factory ( $this->client, $value );
+				$this->embedded[ $name ][ $key ] = new ObjectResponse ( $this->client, $value );
 		}
 	}
 	
-	public function get ( $key )
+	public function get ( $key, $default = null )
 	{
 		return isset( $this->data[ $key ] )
 			? $this->data[ $key ]
 			: ( isset( $this->embedded[ $key ] )
 				? $this->embedded[ $key ]
-				: null );
+				: $default );
 	}
 	
 	public function getLink ( $name )
