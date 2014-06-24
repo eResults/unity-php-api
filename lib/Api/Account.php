@@ -19,7 +19,7 @@ class Account
      */
     public function getAccount ( $id )
     {
-        return $this->get('accounts/' . urlencode( $id ));
+        return $this->get( 'accounts/' . urlencode( $id ), [], [ 'type' => 'account' ] );
     }
 
     /**
@@ -42,12 +42,12 @@ class Account
 	 */
 	public function claim ( $app, $accountName, $email, $planId, $planType = 'trial' )
 	{
-		return $this->post( 'apps/' . urlencode( $app ) . '/actions/claim', array(
+		return $this->post( 'apps/' . urlencode( $app ) . '/actions/claim', [
 			'account_name' => $accountName,
 			'plan_id' => $planId,
 			'plan_type' => $planType,
 			'user_email' => $email
-		) );
+		], [ 'type' => 'account' ] );
 	}
 	
     /**

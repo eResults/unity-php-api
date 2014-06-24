@@ -38,10 +38,15 @@ class ObjectResponse
 			$this->parseEmbedded( $this->data['_embedded'] );
 	}
 	
+	public function build () {}
+	
 	public function factory ( $client, $type = null, $data = [] )
 	{
 		switch( $type )
 		{
+			case 'account':
+				return new AccountResponse( $client, $data );
+				
 			case 'user':
 				return new UserResponse( $client, $data );
 			
