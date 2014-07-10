@@ -110,4 +110,9 @@ class ObjectResponse
 	{
 		unset( $this->data[ $offset ] );
 	}
+	
+	public function getRawData ()
+	{
+		return $this->data;
+	}
 }
