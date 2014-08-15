@@ -42,7 +42,7 @@ class ObjectResponse
 	
 	public function build () {}
 	
-	public function factory ( $client, $type = null, $data = [] )
+	public static function factory ( $client, $type = null, $data = [] )
 	{
 		switch( $type )
 		{

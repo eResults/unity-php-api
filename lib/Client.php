@@ -10,7 +10,6 @@ use Guzzle\Http\Client as HttpClient,
 class Client
 {
 	protected $options = array(
-		'token' => null,
 		'client_id' => null,
 		'client_secret' => null,
 		
