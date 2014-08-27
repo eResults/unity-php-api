@@ -15,9 +15,9 @@ class AccountResponse
 		parent::build();
 
 		if( isset( $this->data['claimant'] ) )
-			$this->data['claimant'] = new UserResponse( $this->client, $this->data[] );
+			$this->data['claimant'] = new UserResponse( $this->client, $this->data['claimant'] );
 		
 		foreach( $this->embedded['users'] as &$user )
-			$user = new UserRightResponse( $this->client, $user );
+			$user = new UserRightResponse( $this->client, $user->getRawData() );
 	}
 }
