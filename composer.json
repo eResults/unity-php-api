@@ -1,6 +1,25 @@
 {
-    "name": "eresults/unity-php-api",
+    "name": "eresults/api-client-php",
+	"description": "eResults API Client for PHP",
+	"homepage": "http://eresults.nl/api",
+	"license": "proprietary",
+	"authors": [
+	  {
+		"name": "Martijn Gastkemper",
+		"email": "martijngastkemper@eresults.nl"
+	  },
+	  {
+		"name": "Niels Janssen",
+		"email": "nielsjanssen@eresults.nl"
+	  }
+	],
+	
+	"require": {
+		"guzzle/guzzle": "~3.9",
+		"league/oauth2-client": "~0.3"
+	},
+	
     "autoload": {
-        "classmap": ["Exceptions/", "API.php"]
+        "psr-4": { "eResults\\Unity\\Api\\": "lib/" }
     }
 }
