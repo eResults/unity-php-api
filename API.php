@@ -32,7 +32,7 @@ class API
 	 * My identifier, given by Unity.
 	 * @var string
 	 */
-	private $accountSystemName;
+	private $applicationKey;
 
 	/**
 	 * My private key, given by Unity.
@@ -65,28 +65,28 @@ class API
 	private $certificateLocation;
 
 	/**
+	 *
+	 * @var string 
+	 */
+	private $domain;
+
+	/**
 	 * Class constructor
 	 */
-	public function __construct( $accountSystemName, $privateKey, $serverUrl = null, $auto_attach = true )
+	public function __construct( $applicationKey, $privateKey, $domain, $serverUrl = null )
 	{
-		if ( !$accountSystemName || !$privateKey )
-		{
-			throw new UnityException( 'Missing accountSystemName or privateKey' );
-		}
-		$this->accountSystemName = $accountSystemName;
+		if ( !$applicationKey || !$privateKey )
+			throw new UnityException( 'Missing applicationKey or privateKey' );
+
+		$this->applicationKey = $applicationKey;
 		$this->privateKey = $privateKey;
 
-		if ( $serverUrl !== null )
-		{
+		$this->setDomain( $domain );
+
+		if ( $serverUrl )
 			$this->serverUrl = $serverUrl;
-		}
 
 		$this->setCertificateLocation();
-
-		if ( $auto_attach )
-		{
-			$this->attach();
-		}
 	}
 
 	/**
@@ -96,17 +96,19 @@ class API
 	public function setCertificateLocation( $location = null )
 	{
 		if ( !$location )
-		{
 			$location = __DIR__ . '/ca-bundle.crt';
-		}
+
 		$this->certificateLocation = $location;
 	}
 
-	public function attach( $force = false )
+	public function attach()
 	{
-		if ( $force || !$this->getSessionAlias() )
+		if ( !$this->getSessionAlias() )
 		{
-			header( 'Location: ' . $this->getAttachUrl( array( 'redirect' => $this->getUrl() ) ) );
+			header( 'Location: ' . $this->getAttachUrl( array( 
+				'redirect' => $this->getUrl(), 
+				'_domain' => $this->domain 
+			)));
 			exit();
 		}
 	}
@@ -128,18 +130,14 @@ class API
 			exit();
 		}
 		elseif ( isset( $_SESSION['unity']['sessionAlias'] ) )
-		{
 			return $_SESSION['unity']['sessionAlias'];
-		}
 		else
-		{
 			return false;
-		}
 	}
 
 	private function getUrl()
 	{
-		return (isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://' ) . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+		return ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) || isset( $_SERVER['FORCE_SSL'] ) ? 'https://' : 'http://' ) . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
 	}
 
 	/**
@@ -150,10 +148,13 @@ class API
 	public function login( $redirect = null )
 	{
 		if ( !$redirect )
-		{
 			$redirect = $this->getUrl();
-		}
-		$this->redirect( 'sso', $redirect, $this->accountSystemName );
+
+		$this->redirect( 'sso', array( 
+			'redirect' => $redirect, 
+			'applicationKey' => $this->applicationKey, 
+			'_domain' => $this->domain 
+		));
 	}
 
 	/**
@@ -161,32 +162,33 @@ class API
 	 * @param string Redirect url. If false do no redirect.
 	 * @param string AccountSystemName Default this is the currect account
 	 */
-	public function logout( $redirect = false, $accountSystemName = false )
+	public function logout( $redirect = false )
 	{
 		$this->request( 'session', self::METHOD_DELETE, array( 'id' => $this->getSessionAlias() ) );
 
 		if ( $redirect )
 		{
-			if ( !$accountSystemName )
-			{
-				$accountSystemName = $this->accountSystemName;
-			}
-			$this->redirect( 'sso', $redirect, $accountSystemName );
+			$this->redirect( 'sso', array(
+				'redirect'	=> $redirect,
+				'_domain'	=> $this->domain 
+			));
 		}
 	}
 
 	public function noAccess( $redirect = null )
 	{
 		if ( !$redirect )
-		{
 			$redirect = $this->getUrl();
-		}
-		$this->redirect( 'no-access', $redirect, $this->accountSystemName );
+
+		$this->redirect( 'no-access', array(
+			'redirect'	=> $redirect,
+			'applicationKey' => $this->applicationKey
+		));
 	}
 
-	private function redirect( $page, $redirect, $accountSystemName )
+	private function redirect( $page, $params )
 	{
-		header( 'Location: ' . $this->serverUrl . '/' . $page . '?' . http_build_query( array( 'redirect' => $redirect, 'accountSystemName' => $accountSystemName ) ) );
+		header( 'Location: ' . $this->serverUrl . '/' . $page . '?' . http_build_query( $params ) );
 		exit();
 	}
 
@@ -198,14 +200,20 @@ class API
 	public function getAttachUrl( $params = array( ) )
 	{
 		return $this->serverUrl . '/sso/attach?' . http_build_query( array_merge( array(
-							'accountSystemName' => $this->accountSystemName
-								), $params ) );
+			'applicationKey' => $this->applicationKey
+		), $params ) );
+	}
+
+	public function setDomain( $domain )
+	{
+		$this->domain = $domain;
+		return $this;
 	}
 
 	/**
 	 * Get an account
 	 * 
-	 * @param array $search array( id => 123, systemName = f4, name = test ) When empty return current account
+	 * @param array $search array( id => 123, systemName = f4, name = test, domain = f4.usesmaia.com ) When empty return current account
 	 * @return array
 	 */
 	public function getAccount( $search = array(), $refresh = false )
@@ -218,9 +226,7 @@ class API
 		}
 		
 		if ( !$search )
-		{
-			$search[ 'systemName' ] = $this->accountSystemName;
-		}
+			$search[ 'domain' ] = $this->domain;
 
 		$response = $this->request( 'account', self::METHOD_GET, $search );
 
@@ -237,9 +243,7 @@ class API
 	public function getUser( $search, $refresh = false )
 	{
 		if ( isset( $search['id'] ) && isset( $this->users[ $search['id' ]] ) && !$refresh)
-		{
 			return $this->users[ $search['id'] ];
-		}
 
 		$response = $this->request( 'user', self::METHOD_GET, $search );
 		return $this->users[$response['user']['id']] = $response['user'];
@@ -287,22 +291,25 @@ class API
 		$this->users[$response['user']['id']] = $response['user'];
 		return $response['user'];
 	}
-	
+
 	/**
 	 * Give an user a role.
 	 * 
 	 * @param string $user
 	 * @param string $role 'admin' or 'user'
+	 * @param array|bool Default: false
 	 * @return array
 	 */
-	public function grantRights( $userId, $role = 'user', $metadata = array() )
+	public function grantRights( $userId, $role = 'user', $metadata = false )
 	{
 		$data = array (
 			'id' => $userId,
 			'role'	=> $role,
-			'sessionAlias' => $this->getSessionAlias(),
-			'metadata' => json_encode( $metadata )
+			'sessionAlias' => $this->getSessionAlias()
 		);
+		
+		if ( $metadata !== false )
+			$data['metadata'] = json_encode( $metadata );
 		
 		$response = $this->request( 'user', self::METHOD_PUT, $data );
 
@@ -348,7 +355,7 @@ class API
 	 */
 	public function modifyAccount( $data = array( ) )
 	{
-		$data['id'] = $this->accountSystemName;
+		$data['id'] = $this->applicationKey;
 
 		$response = $this->request( 'account', self::METHOD_PUT, $data );
 
@@ -374,8 +381,8 @@ class API
 	{
 		$url = $this->serverUrl . '/api-v1/' . $type;
 
-		$vars['unityHash'] = hash( 'sha256', $this->accountSystemName . $this->privateKey );
-		$vars['accountSystemName'] = $this->accountSystemName;
+		$vars['unityHash'] = hash( 'sha256', $this->applicationKey . $this->privateKey );
+		$vars['_domain'] = $this->domain;
 
 		$curl = curl_init();
 		
@@ -394,9 +401,7 @@ class API
 					unset( $vars['id'] );
 				}
 				else
-				{
 					$id = '';
-				}
 				
 				$url = $url . $id . '?' . http_build_query( $vars );
 				curl_setopt( $curl, CURLOPT_POSTFIELDS, $vars );
@@ -424,14 +429,10 @@ class API
 		$body = curl_exec( $curl );
 
 		if ( curl_errno( $curl ) != 0 )
-		{
 			throw new UnityException( 'SSO failure: HTTP request to server failed. ' . curl_error( $curl ) );
-		}
 
 		if ( stristr( $body, 'Fatal error' ) )
-		{
 			throw new UnityException( 'Server returned "Fatal error"' );
-		}
 
 		$decodedBody = json_decode( $body, true );
 

@@ -10,7 +10,7 @@ class UnityException extends \Exception
 	{
 		if ( !isset( $this->logPriority) )
 		{
-			return 1; //\Zend_Log::ALERT
+			return 1;
 		}
 		return $this->logPriority;
 	}
