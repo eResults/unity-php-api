@@ -17,9 +17,9 @@ class UserRightResponse
 	
 	public function __construct( Client $client, array $rawData = [] )
 	{
-		parent::__construct( $client, $rawData['user'] );
-		
 		$this->rightData = $rawData['right'];
+		
+		parent::__construct( $client, $rawData['user'] );
 	}
 	
 	public function build ()
