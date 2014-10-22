@@ -2,7 +2,7 @@
 
 namespace eResults\Unity\Api\Provider;
 
-use League\OAuth2\Client\Provider\IdentityProvider,
+use League\OAuth2\Client\Provider\AbstractProvider,
 	League\OAuth2\Client\Token\AccessToken;
 
 /**
@@ -11,7 +11,7 @@ use League\OAuth2\Client\Provider\IdentityProvider,
  * @author niels
  */
 class UnityProvider
-	extends IdentityProvider
+	extends AbstractProvider
 {
 	protected $baseUri = 'https://api.eresults.nl/';
 	
