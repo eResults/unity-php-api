@@ -86,7 +86,10 @@ class ObjectResponse
 
 		return preg_match( '|^https?\:|', $link )
 			? $link
-			: strtr( $this->client->getOption('url'), [ ':path' => ltrim( $link, '/' ) ] );
+			: strtr( $this->client->getOption('url'), [
+				':path' => ltrim( $link, '/' ),
+				':protocol' => $this->client->getOption('protocol')
+			] );
 	}
 	
 	public function offsetExists($offset)
