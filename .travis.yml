@@ -3,4 +3,14 @@ php:
     - 5.6
     
 before_script:
-    - composer install
+    - composer install --dev
+
+script:
+    - phpunit --coverage-clover build/logs/clover.xml
+  
+after_script:
+  - vendor/bin/test-reporter
+ 
+addons:
+    code_climate:
+        repo_token: 38e52f801c2bf9d9ee1b24a9890533956910b01fbad7be4ade31f41117d81513
