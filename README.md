@@ -1,51 +1,14 @@
-unity-php-api
-=============
+# Unity PHP api [![Build Status](https://travis-ci.org/eResults/unity-php-api.svg?branch=master)](https://travis-ci.org/eResults/unity-php-api) [![Code Climate](https://codeclimate.com/github/eResults/unity-php-api/badges/gpa.svg)](https://codeclimate.com/github/eResults/unity-php-api)
+
 Use this API to connect your application with eResults ID. You need an API key and an account system name.
 
-## Example
-```php
-include vendor/unity-php-api/API.php
-include vendor/unity-php-api/Exceptions/UnityException.php
-include vendor/unity-php-api/Exceptions/Forbidden.php
-include vendor/unity-php-api/Exceptions/SessionExpired.php
-include vendor/unity-php-api/Exceptions/UnAuthrorized.php
-include vendor/unity-php-api/Exceptions/BadRequest.php
+## Testing
 
-define( 'API_KEY', 'XXXX@!#XXXX' );
-define( 'ACCOUNT_SYSTEM_NAME', 'x123' );
+Run
 
-session_start();
-
-$api = new API( ACCOUNT_SYSTEM_NAME, API_KEY );
-
-try
-{
-  $currentUser = $api->getAuthorizedUser();
-}
-catch ( \Unity\Exceptions\Forbidden $e )
-{
-  // Current user doesn't have rights for this application, send user to login page
-  $api->login();
-}
-catch ( \Unity\Exceptions\SessionExpired $e )
-{
-  // Users session is expired, send user to login page to login again
-  $api->login();
-}
-catch( \Unity\Exceptions\UnAuthorized $e )
-{
-  // No access to this account, send user to login page
-  $api->login();
-}
-catch( \Unity\Exceptions\BadRequest $e )
-{
-  die ( "Request failed because of the following reason: $e->getMessage()" );
-}
-
-if ( ! $currentUser )
-{
-  $api->login();
-}
-
-echo 'Welcom ' . $currentUser[ 'givenNames' ];
+```bash
+$ composer install
+$ phpunit
 ```
+
+to test the code.
