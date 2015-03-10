@@ -18,7 +18,7 @@ class User extends Api
      */
     public function getUser ( $id )
     {
-        return $this->get('users/' . urlencode( $id ));
+        return $this->get('users/' . urlencode( $id ), [], [ 'type' => 'user' ]);
     }
 
     /**
