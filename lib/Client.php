@@ -53,20 +53,24 @@ class Client
 	 * @param array $options A set of options for the Provider
 	 * @return Provider\UnityProvider
 	 */
-	public function getAuthProvider ( $options = array() )
+	public function getAuthProvider ( $options = [] )
 	{
-		$options = array_merge( $options, array(
+		$options = array_merge( [
+			'redirect_uri' => null
+		], $options );
+		
+		$allOptions = array_merge( $options, [
 			'redirectUri' => $options['redirect_uri'],
 			'clientId' => $this->options['client_id'],
 			'clientSecret' => $this->options['client_secret'],
-			'baseUri' => strtr( $this->options['url'], array(
+			'baseUri' => strtr( $this->options['url'], [
 				':protocol' => $this->options['protocol'],
 				':format'   => $this->options['format'],
 				':path'		=> ''
-			) )
-		) );
+			] )
+		] );
 
-		return new Provider\UnityProvider( $options );
+		return new Provider\UnityProvider( $allOptions );
 	}
 	
 	/**
