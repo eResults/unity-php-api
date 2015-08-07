@@ -3,7 +3,6 @@
 namespace eResults\Unity\Test\Api;
 
 use eResults\Unity\Api\Provider\UnityProvider,
-	League\OAuth2\Client\Provider\AbstractProvider,
 	PHPUnit_Framework_TestCase;
 
 class UnityProviderTest
@@ -12,7 +11,7 @@ class UnityProviderTest
 	
 	public function testType()
 	{
-		$this->assertInstanceOf(AbstractProvider::class, new UnityProvider());
+		$this->assertInstanceOf('League\OAuth2\Client\Provider\AbstractProvider', new UnityProvider());
 	}
 	
 }

@@ -9,7 +9,7 @@ class AccountTest
 	public function testConstruct()
 	{
 		$client = new \eResults\Unity\Api\Client();
-		$this->assertInstanceOf(\eResults\Unity\Api\Api\Account::class, new \eResults\Unity\Api\Api\Account($client));
+		$this->assertInstanceOf('\eResults\Unity\Api\Api\Account', new \eResults\Unity\Api\Api\Account($client));
 	}
 	
 }

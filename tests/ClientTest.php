@@ -10,7 +10,7 @@ class ClientTest
 	{
 		$client = new \eResults\Unity\Api\Client();
 
-		$this->assertInstanceOf(\eResults\Unity\Api\Provider\UnityProvider::class, $client->getAuthProvider());
+		$this->assertInstanceOf('\eResults\Unity\Api\Provider\UnityProvider', $client->getAuthProvider());
 	}
 	
 }
