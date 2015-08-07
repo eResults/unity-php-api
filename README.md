@@ -2,13 +2,19 @@
 
 Use this API to connect your application with eResults ID. You need an API key and an account system name.
 
+## Installation
+
+```
+composer require eresults/unity-php-api
+```
+
 ## Testing
 
 Run
 
 ```bash
-$ composer install
-$ phpunit
+composer install
+phpunit
 ```
 
 to test the code.
