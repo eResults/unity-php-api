@@ -3,58 +3,61 @@
 namespace eResults\Unity\Api;
 
 /**
- * Abstract class for Api classes
+ * Abstract class for Api classes.
  */
 abstract class Api
 {
     /**
-     * The client
-	 * 
+     * The client.
+     * 
      * @var Client
      */
     private $client;
 
-    public function __construct( Client $client )
+    public function __construct(Client $client)
     {
         $this->client = $client;
     }
 
     /**
-     * Call any path, GET method
+     * Call any path, GET method.
      *
-     * @param   string  $path				the path
-     * @param   array   $parameters			GET parameters
-     * @param   array   $requestOptions		reconfigure the request
-     * @return  array
+     * @param string $path           the path
+     * @param array  $parameters     GET parameters
+     * @param array  $requestOptions reconfigure the request
+     *
+     * @return array
      */
-    protected function get( $path, array $parameters = array(), array $requestOptions = array() )
+    protected function get($path, array $parameters = array(), array $requestOptions = array())
     {
-        return $this->client->get( $path, $parameters, $requestOptions );
+        return $this->client->get($path, $parameters, $requestOptions);
     }
 
     /**
-     * Call any path, POST method
+     * Call any path, POST method.
      *
-     * @param   string  $path				the path
-     * @param   array   $parameters			POST parameters
-     * @param   array   $requestOptions		reconfigure the request
-     * @return  array
+     * @param string $path           the path
+     * @param array  $parameters     POST parameters
+     * @param array  $requestOptions reconfigure the request
+     *
+     * @return array
      */
-    protected function post( $path, array $parameters = array(), array $requestOptions = array() )
+    protected function post($path, array $parameters = array(), array $requestOptions = array())
     {
-        return $this->client->post( $path, $parameters, $requestOptions );
+        return $this->client->post($path, $parameters, $requestOptions);
     }
 
     /**
-     * Call any path, DELETE method
+     * Call any path, DELETE method.
      *
-     * @param   string  $path				the path
-     * @param   array   $parameters			DELETE parameters
-     * @param   array   $requestOptions		reconfigure the request
-     * @return  array
+     * @param string $path           the path
+     * @param array  $parameters     DELETE parameters
+     * @param array  $requestOptions reconfigure the request
+     *
+     * @return array
      */
-    protected function delete( $path, array $parameters = array(), array $requestOptions = array() )
+    protected function delete($path, array $parameters = array(), array $requestOptions = array())
     {
-        return $this->client->delete( $path, $parameters, $requestOptions );
+        return $this->client->delete($path, $parameters, $requestOptions);
     }
 }

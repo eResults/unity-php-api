@@ -3,29 +3,29 @@
 namespace eResults\Unity\Api\Exception;
 
 /**
- * Description of HttpException
+ * Description of HttpException.
  *
  * @author niels
  */
 class HttpException
-	extends \Exception
+    extends \Exception
 {
-	/**
-	 * The JSON error body.
-	 * 
-	 * @var array
-	 */
-	protected $json = array();
-	
-	public function __construct ( $code, array $json )
-	{
-		parent::__construct( $json['error_description'] ?: $json['message'], $code );
-		
-		$this->json = $json;
-	}
-	
-	public function getError ()
-	{
-		return $this->json['error'];
-	}
+    /**
+     * The JSON error body.
+     * 
+     * @var array
+     */
+    protected $json = array();
+
+    public function __construct($code, array $json)
+    {
+        parent::__construct($json['error_description'] ?: $json['message'], $code);
+
+        $this->json = $json;
+    }
+
+    public function getError()
+    {
+        return $this->json['error'];
+    }
 }

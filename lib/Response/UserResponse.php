@@ -3,15 +3,15 @@
 namespace eResults\Unity\Api\Response;
 
 /**
- * Description of UserResponse
+ * Description of UserResponse.
  *
  * @author niels
  */
 class UserResponse
-	extends ObjectResponse
+    extends ObjectResponse
 {
-	public function hasRole ( $role )
-	{
-		return $this->get('role') === $role;
-	}
+    public function hasRole($role)
+    {
+        return $this->get('role') === $role;
+    }
 }

@@ -11,36 +11,39 @@ use eResults\Unity\Api\Api;
 class User extends Api
 {
     /**
-     * Get extended information about a user by its username
+     * Get extended information about a user by its username.
      *
-     * @param   string  $id         the username to show
-     * @return  array                     informations about the user
+     * @param string $id the username to show
+     *
+     * @return array informations about the user
      */
-    public function getUser ( $id )
+    public function getUser($id)
     {
-        return $this->get('users/' . urlencode( $id ), [], [ 'type' => 'user' ]);
+        return $this->get('users/'.urlencode($id), [], ['type' => 'user']);
     }
 
     /**
      * Update user informations.
      *
-     * @param   string  $id         the username to update
-     * @param   array   $data             key=>value user attributes to update.
-     *                                    key can be name, email, blog, company or location
-     * @return  array                     informations about the user
+     * @param string $id   the username to update
+     * @param array  $data key=>value user attributes to update.
+     *                     key can be name, email, blog, company or location
+     *
+     * @return array informations about the user
      */
-    public function update( $id, array $data )
+    public function update($id, array $data)
     {
     }
 
     /**
-     * Get the accounts a user has access to
+     * Get the accounts a user has access to.
      *
-     * @param   string  $id         the username
-     * @return  array                     list of followed users
+     * @param string $id the username
+     *
+     * @return array list of followed users
      */
-    public function getAccounts( $id )
+    public function getAccounts($id)
     {
-        return $this->get('users/' . urlencode($id) . '/accounts');
+        return $this->get('users/'.urlencode($id).'/accounts');
     }
 }
