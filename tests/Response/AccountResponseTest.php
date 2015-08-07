@@ -24,7 +24,7 @@ class AccountResponseTest
 			]
 		);
 
-		$this->assertInstanceOf( \eResults\Unity\Api\Response\UserResponse::class, $response->get('claimant') );
+		$this->assertInstanceOf( '\eResults\Unity\Api\Response\UserResponse', $response->get('claimant') );
 		
 		$this->assertTrue( $response->get('claimant')->hasRole('admin') );
 	}
