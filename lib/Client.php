@@ -231,7 +231,7 @@ class Client
 
         $request->setBody(json_encode($parameters), 'application/json');
 
-        return $this->handleRequest($request);
+        return $this->handleRequest($request, $requestOptions);
     }
 
     /**

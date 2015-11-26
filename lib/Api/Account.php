@@ -74,12 +74,12 @@ class Account
      *
      * @throws HttpException
      */
-    public function inviteUser($accountId, $id, $metadata = array())
+    public function inviteUser($accountId, $id, $metadata = [])
     {
-        return $this->post('accounts/'.urlencode($accountId).'/users', array(
+        return $this->post('accounts/'.urlencode($accountId).'/users', [
             'id' => $id,
             'metadata' => $metadata,
-        ));
+        ], ['type' => 'user-right']);
     }
 
     /**

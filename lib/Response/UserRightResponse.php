@@ -19,7 +19,9 @@ class UserRightResponse
     {
         $this->rightData = $rawData['right'];
 
-        parent::__construct($client, $rawData['user']);
+        parent::__construct($client, [
+            'user' => new UserResponse($rawData['user'])
+        ]);
     }
 
     public function build()
@@ -32,7 +34,7 @@ class UserRightResponse
     public function getMetadata($key = null, $default = null)
     {
         if (!isset($this->metadata)) {
-            return;
+            return null;
         }
 
         return $key === null

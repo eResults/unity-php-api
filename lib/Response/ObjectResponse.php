@@ -52,6 +52,9 @@ class ObjectResponse
             case 'user':
                 return new UserResponse($client, $data);
 
+            case 'user-right':
+                return new UserRightResponse($client, $data);
+
             default:
                 return new self($client, $data);
         }
