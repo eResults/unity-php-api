@@ -20,7 +20,7 @@ class UserRightResponse
         $this->rightData = $rawData['right'];
 
         parent::__construct($client, array_merge($rawData['user'], [
-            'user' => new UserResponse($rawData['user'])
+            'user' => new UserResponse($client, $rawData['user'])
         ]));
     }
 
