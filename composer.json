@@ -1,5 +1,5 @@
 {
-    "name": "eresults/api-client-php",
+    "name": "eresults/unity-php-api",
 	"description": "eResults API Client for PHP",
 	"homepage": "http://eresults.nl/api",
 	"license": "proprietary",
@@ -16,13 +16,12 @@
 	],
 	
 	"require": {
-		"guzzle/guzzle": "~3.9",
-		"league/oauth2-client": "~0.12.0"
+		"guzzlehttp/guzzle": "~6.0",
+		"league/oauth2-client": "~1.1"
 	},
 	
 	"require-dev": {
-        "phpunit/phpunit": "~4.3",
-		"codeclimate/php-test-reporter": "dev-master"
+        "phpunit/phpunit": "~4.3"
 	},
 	
     "autoload": {

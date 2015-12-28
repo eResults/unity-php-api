@@ -15,13 +15,13 @@ class UserRightResponse
     protected $rightData = [];
     protected $metadata;
 
-    public function __construct(Client $client, array $rawData = [])
+    public function __construct(array $rawData, array $options = [])
     {
         $this->rightData = $rawData['right'];
 
-        parent::__construct($client, array_merge($rawData['user'], [
-            'user' => new UserResponse($client, $rawData['user'])
-        ]));
+        parent::__construct(array_merge($rawData['user'], [
+            'user' => new UserResponse($rawData['user'], $options)
+        ]), $options);
     }
 
     public function build()

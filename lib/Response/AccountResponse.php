@@ -15,11 +15,11 @@ class AccountResponse
         parent::build();
 
         if (isset($this->data['claimant'])) {
-            $this->data['claimant'] = new UserResponse($this->client, $this->data['claimant']);
+            $this->data['claimant'] = new UserResponse($this->data['claimant'], $this->options);
         }
 
         foreach ($this->embedded['users'] as &$user) {
-            $user = new UserRightResponse($this->client, $user->getRawData());
+            $user = new UserRightResponse($user->getRawData(), $this->options);
         }
     }
 }

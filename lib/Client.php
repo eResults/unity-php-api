@@ -2,10 +2,17 @@
 
 namespace eResults\Unity\Api;
 
-use Guzzle\Http\Client as HttpClient;
-use Guzzle\Http\Message\Request;
-use Guzzle\Http\Message\Response;
+use eResults\Unity\Api\Collection\PaginatedCollection;
+use GuzzleHttp\Client as HttpClient;
+
+//use GuzzleHttp\Message\Request;
+//use GuzzleHttp\Message\Response;
 use eResults\Unity\Api\Response\ObjectResponse;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
@@ -40,15 +47,18 @@ class Client
         $url = strtr($this->options['url'], array(
             ':protocol' => $this->options['protocol'],
             ':format' => $this->options['format'],
-            ':path' => $this->options['path'],
+            ':path' => '',
         ));
 
-        $this->httpClient = $client ?: new HttpClient($url);
+        $this->httpClient = $client
+            ?: new HttpClient([
+                'base_uri' => $url
+            ]);
     }
 
     /**
      * Get the League auth provider for easy authentication.
-     * 
+     *
      * @param array $options A set of options for the Provider
      *
      * @return Provider\UnityProvider
@@ -75,36 +85,44 @@ class Client
 
     /**
      * Get the value of an option.
-     * 
+     *
      * @param string $option
      *
      * @return mixed
      */
     public function getOption($option)
     {
-        return isset($this->options[ $option ])
-            ? $this->options[ $option ]
+        return isset($this->options[$option])
+            ? $this->options[$option]
             : null;
     }
 
     /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
      * Set an option.
-     * 
+     *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return Client
      */
     public function setOption($key, $value)
     {
-        $this->options[ $key ] = $value;
+        $this->options[$key] = $value;
 
         return $this;
     }
 
     /**
      * Get the Guzzle HttpClient.
-     * 
+     *
      * @return HttpClient
      */
     public function getHttpClient()
@@ -114,7 +132,7 @@ class Client
 
     /**
      * A shorthand to get the currently authenticated user.
-     * 
+     *
      * @return array
      *
      * @throws HttpException
@@ -126,7 +144,7 @@ class Client
 
     /**
      * Shorthand to logout the currently authenticated user.
-     * 
+     *
      * @param string $returnTo The URL to which the user will be returned after logging out, or when the user decides to cancel.
      *
      * @throws HttpException
@@ -172,14 +190,14 @@ class Client
     /**
      * Inject an API instance.
      *
-     * @param string $name     The API name
-     * @param Api    $instance The API instance
+     * @param string $name The API name
+     * @param Api $instance The API instance
      *
      * @return Api
      */
     public function setApi($name, Api $instance)
     {
-        $this->apis[ $name ] = $instance;
+        $this->apis[$name] = $instance;
 
         return $this;
     }
@@ -193,43 +211,45 @@ class Client
      */
     public function getApi($name)
     {
-        return $this->apis[ $name ];
+        return $this->apis[$name];
     }
 
     /**
      * Call any path, GET method
      * Ex: $api->get('me').
      *
-     * @param string $path           the Api path
-     * @param array  $parameters     GET parameters
-     * @param array  $requestOptions reconfigure the request
+     * @param string $path the Api path
+     * @param array $parameters GET parameters
+     * @param array $requestOptions reconfigure the request
      *
      * @return array
      */
     public function get($path, array $parameters = array(), $requestOptions = array())
     {
-        return $this->handleRequest($this->getHttpClient()->get($path, $parameters, $requestOptions), $requestOptions);
+        $request = new Request('GET', $this->options['path'].'/'.$path.'?'.\GuzzleHttp\Psr7\build_query($parameters), array_merge($requestOptions, [
+            'Authorization' => 'Bearer '.$this->options['token']
+        ]));
+
+        return $this->handleRequest($request, $requestOptions);
     }
 
     /**
      * Call any path, POST method
      * Ex: $api->post('user/[user-id]').
      *
-     * @param string $path           the Api path
-     * @param array  $parameters     POST parameters
-     * @param array  $requestOptions reconfigure the request
+     * @param string $path the Api path
+     * @param array $parameters POST parameters
+     * @param array $requestOptions reconfigure the request
      *
      * @return array
      */
     public function post($path, array $parameters = array(), $requestOptions = array())
     {
-        $request = $this->getHttpClient()->post(
-            $path,
-            null,
-            $requestOptions
-        );
+        $request = new Request('POST', $this->options['path'].'/'.$path, array_merge($requestOptions, [
+            'Authorization' => 'Bearer '.$this->options['token'],
+            'Content-Type' => 'application/json'
+        ]), json_encode($parameters));
 
-        $request->setBody(json_encode($parameters), 'application/json');
 
         return $this->handleRequest($request, $requestOptions);
     }
@@ -238,32 +258,37 @@ class Client
      * Call any path, DELETE method
      * Ex: $api->delete('user/[user-id]').
      *
-     * @param string $path           the Api path
-     * @param array  $parameters     DELETE parameters
-     * @param array  $requestOptions reconfigure the request
+     * @param string $path the Api path
+     * @param array $parameters DELETE parameters
+     * @param array $requestOptions reconfigure the request
      *
      * @return array
      */
     public function delete($path, array $parameters = array(), $requestOptions = array())
     {
-        return $this->handleRequest($this->getHttpClient()->delete($path, $parameters, $requestOptions));
+        $request = new Request('DELETE', $this->options['path'].'/'.$path, array_merge($requestOptions, [
+            'Authorization' => 'Bearer '.$this->options['token'],
+            'Content-Type' => 'application/json'
+        ]), json_encode($parameters));
+
+        return $this->handleRequest($request, $requestOptions);
     }
 
     /**
      * Add authentication data to the request and sends it. Calls handleResponse when done.
-     * 
-     * @param \Guzzle\Http\Message\Request $request
+     *
+     * @param RequestInterface $request
      *
      * @return mixed
      */
-    protected function handleRequest(Request $request, array $requestOptions = [])
+    protected function handleRequest(RequestInterface $request, array $requestOptions = [])
     {
-        $request->addHeader('Authorization', 'Bearer '.$this->options['token']);
+        $request->withHeader('Authorization', 'Bearer '.$this->options['token']);
 
         try {
-            $response = $request->send();
-        } catch (\Guzzle\Http\Exception\ClientErrorResponseException $ex) {
-            $this->handleResponse($ex->getResponse());
+            $response = $this->httpClient->send($request);
+        } catch (ClientException $ex) {
+            return $this->handleResponse($ex->getResponse());
         }
 
         return $this->handleResponse($response, $requestOptions);
@@ -271,23 +296,21 @@ class Client
 
     /**
      * Handle the response. Returns either an array or a PaginatedCollection.
-     * 
-     * @param \Guzzle\Http\Message\Response $response
      *
+     * @param ResponseInterface $response
      * @return ObjectResponse|PaginatedCollection
-     *
      * @throws Exception\HttpException
      */
-    protected function handleResponse(Response $response, array $requestOptions = [])
+    protected function handleResponse(ResponseInterface $response, array $requestOptions = [])
     {
-        $body = $response->json();
+        $body = json_decode($response->getBody()->getContents(), true);
 
         if (!preg_match('~[23][0-9]{2}~', $response->getStatusCode())) {
             throw new Exception\HttpException($response->getStatusCode(), $body);
         }
 
         if (isset($body['pages'], $body['_embedded']) && ctype_digit($body['pages'])) {
-            return new Collection\PaginatedCollection($body);
+            return new PaginatedCollection($this, $body);
         }
 
         if (isset($requestOptions['type'])) {

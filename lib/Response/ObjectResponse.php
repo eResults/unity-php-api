@@ -13,9 +13,9 @@ class ObjectResponse
     implements \ArrayAccess
 {
     /**
-     * @var Client
+     * @var array
      */
-    protected $client;
+    protected $options;
 
     /**
      * @var array
@@ -27,9 +27,9 @@ class ObjectResponse
      */
     protected $embedded = [];
 
-    public function __construct(Client $client, array $rawData = [])
+    public function __construct(array $rawData, array $options = [])
     {
-        $this->client = $client;
+        $this->options = $options;
         $this->data = $rawData;
 
         if (isset($this->data['_embedded'])) {
@@ -43,20 +43,20 @@ class ObjectResponse
     {
     }
 
-    public static function factory($client, $type = null, $data = [])
+    public static function factory(Client $client, $type = null, $data = [])
     {
         switch ($type) {
             case 'account':
-                return new AccountResponse($client, $data);
+                return new AccountResponse($data, $client->getOptions());
 
             case 'user':
-                return new UserResponse($client, $data);
+                return new UserResponse($data, $client->getOptions());
 
             case 'user-right':
-                return new UserRightResponse($client, $data);
+                return new UserRightResponse($data, $client->getOptions());
 
             default:
-                return new self($client, $data);
+                return new self($data, $client->getOptions());
         }
     }
 
@@ -66,7 +66,7 @@ class ObjectResponse
             $this->embedded[ $name ] = [];
 
             foreach ($values as $key => $value) {
-                $this->embedded[ $name ][ $key ] = new self($this->client, $value);
+                $this->embedded[ $name ][ $key ] = new self($value, $this->options);
             }
         }
     }
@@ -90,9 +90,9 @@ class ObjectResponse
 
         return preg_match('|^https?\:|', $link)
             ? $link
-            : strtr($this->client->getOption('url'), [
+            : strtr($this->options['url'], [
                 ':path' => ltrim($link, '/'),
-                ':protocol' => $this->client->getOption('protocol'),
+                ':protocol' => $this->options['protocol']
             ]);
     }
 
