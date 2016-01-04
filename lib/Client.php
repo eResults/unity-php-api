@@ -42,7 +42,7 @@ class Client
 
     public function __construct($options = array(), HttpClient $client = null)
     {
-        $this->options = array_merge($this->options, $options);
+        $this->options = array_merge($this->options, array_filter($options));
 
         $url = strtr($this->options['url'], array(
             ':protocol' => $this->options['protocol'],
