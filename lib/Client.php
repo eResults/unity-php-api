@@ -317,6 +317,6 @@ class Client
             return ObjectResponse::factory($this, $requestOptions['type'], $body);
         }
 
-        return new ObjectResponse($this, $body);
+        return new ObjectResponse($body, $this->getOptions());
     }
 }
