@@ -27,7 +27,7 @@ class ObjectResponse
      */
     protected $embedded = [];
 
-    public function __construct(array $rawData, array $options = [])
+    public function __construct(array $rawData = [], array $options = [])
     {
         $this->options = $options;
         $this->data = $rawData;

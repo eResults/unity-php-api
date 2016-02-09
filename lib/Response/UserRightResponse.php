@@ -15,7 +15,7 @@ class UserRightResponse
     protected $rightData = [];
     protected $metadata;
 
-    public function __construct(array $rawData, array $options = [])
+    public function __construct(array $rawData = [], array $options = [])
     {
         $this->rightData = $rawData['right'];
 
