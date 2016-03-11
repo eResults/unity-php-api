@@ -19,7 +19,15 @@ class HttpException
 
     public function __construct($code, array $json)
     {
-        parent::__construct($json['error_description'] ?: $json['message'], $code);
+        $message = '';
+        
+        if (isset($json['error_description'])) {
+            $message = $json['error_description'];
+        } elseif (isset($json['message'])) {
+            $message = $json['message'];
+        }
+        
+        parent::__construct($message, $code);
 
         $this->json = $json;
     }
