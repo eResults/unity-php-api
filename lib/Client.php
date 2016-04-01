@@ -303,7 +303,7 @@ class Client
      */
     protected function handleResponse(ResponseInterface $response, array $requestOptions = [])
     {
-        $body = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true) ?: [];
 
         if (!preg_match('~[23][0-9]{2}~', $response->getStatusCode())) {
             throw new Exception\HttpException($response->getStatusCode(), $body);
