@@ -16,7 +16,7 @@ class Account
      *
      * @param string $id the username to show
      *
-     * @return array informations about the user
+     * @return array information about the user
      */
     public function getAccount($id)
     {
@@ -32,12 +32,12 @@ class Account
 
     /**
      * Claim an account for an app.
-     * 
-     * @param string $app         The app UUID or public ID
+     *
+     * @param string $app The app UUID or public ID
      * @param string $accountName /[a-z0-9]([a-z0-9\-]+[a-z0-9]|[a-z0-9]?)/ formatted account name.
-     * @param string $email       The user claiming the account, will become the owner.
-     * @param string $planId      The plan UUID or public ID
-     * @param string $planType    The plan type, either trial or null.
+     * @param string $email The user claiming the account, will become the owner.
+     * @param string $planId The plan UUID or public ID
+     * @param string $planType The plan type, either trial or null.
      *
      * @return array The claimed account.
      */
@@ -67,8 +67,8 @@ class Account
      * Invite a user to an account with certain rights.
      *
      * @param string $accountId The id of the account
-     * @param string $id        The users email address or UUID
-     * @param array  $metadata  The metadata you want to attach to the user right
+     * @param string $id The users email address or UUID
+     * @param array $metadata The metadata you want to attach to the user right
      *
      * @return array
      *
@@ -86,12 +86,24 @@ class Account
      * Invite a user to an account with certain rights.
      *
      * @param string $accountId The id of the account
-     * @param string $id        The users UUID 
+     * @param string $id The users UUID
      *
      * @throws HttpException
      */
     public function removeUser($accountId, $id)
     {
         $this->delete('accounts/'.urlencode($accountId).'/users/'.urlencode($id));
+    }
+
+    /**
+     * Get the certificates from an account.
+     *
+     * @param string $accountId The id of the account
+     *
+     * @return array list of certificates
+     */
+    public function getCertificates($accountId)
+    {
+        return $this->get('accounts/'.urlencode($accountId).'/certificates', [], ['type' => 'certificate']);
     }
 }
