@@ -3,20 +3,19 @@
 namespace eResults\Unity\Api;
 
 use eResults\Unity\Api\Collection\PaginatedCollection;
-use GuzzleHttp\Client as HttpClient;
-
-//use GuzzleHttp\Message\Request;
-//use GuzzleHttp\Message\Response;
 use eResults\Unity\Api\Response\ObjectResponse;
+use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+//use GuzzleHttp\Message\Request;
+//use GuzzleHttp\Message\Response;
+
 class Client
 {
-    protected $options = array(
+    protected $options = [
         'client_id' => null,
         'client_secret' => null,
 
@@ -26,7 +25,7 @@ class Client
         'userAgent' => 'php-eresults-api (http://eresults.nl/api)',
         'token' => null,
         'format' => 'json',
-    );
+    ];
 
     /**
      * @var HttpClient
@@ -38,21 +37,21 @@ class Client
      *
      * @var array
      */
-    protected $apis = array();
+    protected $apis = [];
 
-    public function __construct($options = array(), HttpClient $client = null)
+    public function __construct($options = [], HttpClient $client = null)
     {
         $this->options = array_merge($this->options, array_filter($options));
 
-        $url = strtr($this->options['url'], array(
+        $url = strtr($this->options['url'], [
             ':protocol' => $this->options['protocol'],
             ':format' => $this->options['format'],
             ':path' => '',
-        ));
+        ]);
 
         $this->httpClient = $client
             ?: new HttpClient([
-                'base_uri' => $url
+                'base_uri' => $url,
             ]);
     }
 
@@ -151,9 +150,9 @@ class Client
      */
     public function logout($returnTo = null)
     {
-        $response = $this->post('me/logout', array(
+        $response = $this->post('me/logout', [
             'return_to' => $returnTo,
-        ));
+        ]);
 
         header("Location: {$response['logout_url']}");
         die();
@@ -185,6 +184,20 @@ class Client
         }
 
         return $this->apis['account'];
+    }
+
+    /**
+     * Get the account API.
+     *
+     * @return Api\Account
+     */
+    public function getCertificateApi()
+    {
+        if (!isset($this->apis['certificate'])) {
+            $this->apis['certificate'] = new Api\Certificate($this);
+        }
+
+        return $this->apis['certificate'];
     }
 
     /**
@@ -224,11 +237,12 @@ class Client
      *
      * @return array
      */
-    public function get($path, array $parameters = array(), $requestOptions = array())
+    public function get($path, array $parameters = [], $requestOptions = [])
     {
-        $request = new Request('GET', $this->options['path'].'/'.$path.'?'.\GuzzleHttp\Psr7\build_query($parameters), array_merge($requestOptions, [
-            'Authorization' => 'Bearer '.$this->options['token']
-        ]));
+        $request = new Request('GET', $this->options['path'].'/'.$path.'?'.\GuzzleHttp\Psr7\build_query($parameters),
+            array_merge($requestOptions, [
+                'Authorization' => 'Bearer '.$this->options['token'],
+            ]));
 
         return $this->handleRequest($request, $requestOptions);
     }
@@ -243,11 +257,11 @@ class Client
      *
      * @return array
      */
-    public function post($path, array $parameters = array(), $requestOptions = array())
+    public function post($path, array $parameters = [], $requestOptions = [])
     {
         $request = new Request('POST', $this->options['path'].'/'.$path, array_merge($requestOptions, [
             'Authorization' => 'Bearer '.$this->options['token'],
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]), json_encode($parameters));
 
 
@@ -264,11 +278,11 @@ class Client
      *
      * @return array
      */
-    public function delete($path, array $parameters = array(), $requestOptions = array())
+    public function delete($path, array $parameters = [], $requestOptions = [])
     {
         $request = new Request('DELETE', $this->options['path'].'/'.$path, array_merge($requestOptions, [
             'Authorization' => 'Bearer '.$this->options['token'],
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]), json_encode($parameters));
 
         return $this->handleRequest($request, $requestOptions);
