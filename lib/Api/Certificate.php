@@ -21,4 +21,17 @@ class Certificate extends Api
     {
         return $this->get('certificates/'.urlencode($id).'/validation');
     }
+
+
+    /**
+     * Get the validation status for a certificate
+     *
+     * @param string $id id of the certificate
+     *
+     * @return array validation status of the certificate
+     */
+    public function getStatus($id)
+    {
+        return $this->get('certificates/'.urlencode($id).'/status');
+    }
 }
