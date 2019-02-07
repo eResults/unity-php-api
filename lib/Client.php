@@ -187,9 +187,9 @@ class Client
     }
 
     /**
-     * Get the account API.
+     * Get the certificate API.
      *
-     * @return Api\Account
+     * @return Api\Certificate
      */
     public function getCertificateApi()
     {
