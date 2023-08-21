@@ -69,7 +69,9 @@ class ObjectResponse
             $this->embedded[$name] = [];
 
             foreach ($values as $key => $value) {
-                $this->embedded[$name][$key] = new self($value, $this->options);
+                if (is_array($value)) {
+                    $this->embedded[$name][$key] = new self($value, $this->options);
+                }
             }
         }
     }
